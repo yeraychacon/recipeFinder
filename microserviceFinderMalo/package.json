@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node.js": "^0.0.1-security",
+    "nodemon": "^3.1.7"
+  }
+}

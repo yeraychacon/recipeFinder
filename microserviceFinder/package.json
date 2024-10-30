@@ -1,5 +1,22 @@
 {
+  "name": "microservicefinder",
+  "version": "1.0.0",
+  "description": "microservicio que se dedica a buscar recetas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "node.js": "^0.0.1-security"
+    "expres": "^0.0.5",
+    "express": "^4.21.1",
+    "microservicefinder": "file:",
+    "spoonacular": "^2.0.1"
   }
 }
