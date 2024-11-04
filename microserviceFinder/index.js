@@ -1,16 +1,21 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const port = 3000;
-const apikey = process.env.SPOONACUAR_API_KEY;
+const axios = require('axios');
+const connectDB = require('./config/db');
 
 
-app.get('finder/getRandomRecipes/', async (req, res) => {
+
+app.get('finder/getRandomRecipes', async (req, res) => {
   try {
-    const url ='https://api.spoonacular.com/recipes/random?apikey=${apiKey}&number=10'
+    const apiKey = process.env.SPOONACULAR_API_KEY;
+    const number = req.params.number;
+    const url =`https://api.spoonacular.com/recipes/random?apikey=${apiKey}&number=10`;
 
     const response = await axios.get(url);
     const data = response.data;
-
+    print("hola")
     res.json({data});
     
     console.log('Random recipes obtained randomly');

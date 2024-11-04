@@ -14,9 +14,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.7",
+    "config": "^3.3.12",
+    "dotenv": "^16.4.5",
     "expres": "^0.0.5",
     "express": "^4.21.1",
     "microservicefinder": "file:",
+    "mongo": "^0.1.0",
+    "mongoose": "^8.8.0",
+    "nodemon": "^3.1.7",
     "spoonacular": "^2.0.1"
   }
 }
