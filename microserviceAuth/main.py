@@ -87,3 +87,41 @@ async def register(user: User):
     db.commit()
     cursor.close()
     return {"message": "Usuario registrado con éxito"}
+
+async def getCurrentUser(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+        return payload["sub"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+class AddFavoriteRecipe(BaseModel):
+    recipe: str
+    
+
+@app.post("/auth/favRecipe/add")
+async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
+
+    cursor = db.cursor()
+
+    query = "INSERT INTO favoriterecipes(username, idRecipe) VALUES (%s, %s)"
+
+    cursor.execute(query, (recipe["recipe_id"], user["username"]))
+    existing_favorite = cursor.fetchone()
+
+    if existing_favorite:
+        cursor.close()
+        raise HTTPException(status_code=400, detail="Receta ya añadida a favoritos")
+    
+    insert_query = "INSERT INTO favoriterecipes(username, idRecipe) VALUES (%s, %s)"
+    cursor.execute(insert_query, (user["username"], recipe["recipe_id"]))
+    db.commit()
+
+    cursor.close()
+    return {"message": "Receta añadida a favoritos"}
+    
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8000)
