@@ -44,6 +44,25 @@ app.get('/finder/getRecipeInformation', async (req, res) => {
   }
 });
 
+app.get('/finder/getRecipesByIngredients', async (req, res) => {
+  try {
+    const apiKey = process.env.SPOONACULAR_API_KEY;
+    const ingredients = req.query.ingredients;
+    const number = req.query.number || 10; // Default to 10 if not provided
+    const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredients}&number=${number}`;
+
+    const response = await axios.get(url);
+    const data = response.data;
+
+    res.json(data);
+    console.log('Recipes by ingredients obtained successfully');
+  } catch (error) {
+    console.error('Error obtaining recipes by ingredients:', error.message);
+    res.status(500).json({ error: 'Failed to obtain recipes by ingredients' });
+  }
+}
+);
+
 function formatRecipeData(recipe) {
   // Obtenemos la información básica de la receta
   const id = recipe.id;
