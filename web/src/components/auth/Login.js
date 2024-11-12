@@ -18,7 +18,7 @@ const Login = ({onLogin}) => {
             params.append('username', username);
             params.append('password', password);
 
-            console.log('Datos  enviados:', username, password);
+            console.log('Datos enviados:', username, password);
             const response = await axios.post('/api/auth/token', params, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
