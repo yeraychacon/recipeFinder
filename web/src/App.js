@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import './App.css';
+
+import './styles/App.css'
 
 
 import Register from './components/auth/Register.js';
 import Login from './components/auth/Login.js';
+import Header from './components/header/Header.js';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,7 +19,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-      {isAuthenticated && <header />}
+      {isAuthenticated && <Header />}
 
         <Routes>
           <Route path="/" element={<Login onLogin={handleLogin} />} />

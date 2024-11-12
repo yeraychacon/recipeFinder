@@ -10,4 +10,4 @@ You need to download the following dependencies:
 
 To do this, run the following command:
 
-    npm install axios config dotenv express nodemon spoonacular
+    npm install axios config dotenv express nodemon mongoose spoonacular

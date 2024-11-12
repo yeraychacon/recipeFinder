@@ -1,11 +1,78 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 4000;
 const axios = require('axios');
 const connectDB = require('./config/db');
+const mongoose = require('mongoose');
 
+connectDB();
 
+const RecipeSchema = new mongoose.Schema({
+  id: Number,
+  title: String,
+  image: String,
+  servings: Number,
+  preparationMinutes: Number,
+  cookingMinutes: Number,
+  readyInMinutes: Number,
+  dishTypes: [String],
+  extendedIngredients: [{
+    name: String,
+    amount: Number,
+    unit: String,
+    image: String
+  }],
+  instructions: String
+});
+
+const Recipe = mongoose.model('Recipe', RecipeSchema);
+
+async function saveRecipe(recipe) {
+  try {
+    const newRecipe = new Recipe(recipe);
+    await newRecipe.save();
+    console.log('Recipe saved successfully');
+  } catch (error) {
+    console.error('Error saving recipe:', error.message);
+  }
+}
+
+async function getAllRecipes() {
+  try {
+    const recipes = await Recipe.find();
+    return recipes;
+  } catch (error) {
+    console.error('Error getting all recipes:', error.message);
+  }
+}
+
+async function getRecipeById(id) {
+  try {
+    const recipe = await Recipe.findOne
+    ({ id: id });
+    return recipe;
+  } catch (error) {
+    console.error('Error getting recipe by id:', error.message);
+  }
+}
+
+app.get('/finder/getRecipeById', async (req, res) => {
+  try {
+    const id = req.query.id;
+    const recipe = await getRecipeById(id);
+    if (recipe) {
+      const formattedData = formatRecipeData(recipe);
+      res.json(formattedData);
+      console.log('Recipe obtained by id and formatted successfully');
+    } else {
+      res.status(404).json({ error: 'Recipe not found' });
+    }
+  } catch (error) {
+    console.error('Error obtaining and formatting recipe by id:', error.message);
+    res.status(500).json({ error: 'Failed to obtain and format recipe by id' });
+  }
+});
 
 
 app.get('/finder/getRandomRecipes', async (req, res) => {
@@ -17,6 +84,10 @@ app.get('/finder/getRandomRecipes', async (req, res) => {
     const response = await axios.get(url);
     const data = response.data;
 
+    data.recipes.forEach(recipe => {
+      saveRecipe(recipe);
+    });
+
     res.json(data);
     console.log('Random recipes obtained successfully');
   } catch (error) {
@@ -24,6 +95,8 @@ app.get('/finder/getRandomRecipes', async (req, res) => {
     res.status(500).json({ error: 'Failed to obtain random recipes' });
   }
 });
+
+
 
 app.get('/finder/getRecipeInformation', async (req, res) => {
   try {
@@ -33,6 +106,10 @@ app.get('/finder/getRecipeInformation', async (req, res) => {
 
     const response = await axios.get(url);
     const data = response.data;
+
+    data.recipes.forEach(recipe => {
+      saveRecipe(recipe);
+    });
 
     const formattedData = formatRecipeData(data);
     res.json(formattedData);
@@ -53,6 +130,10 @@ app.get('/finder/getRecipesByIngredients', async (req, res) => {
 
     const response = await axios.get(url);
     const data = response.data;
+
+    data.recipes.forEach(recipe => { 
+      saveRecipe(recipe);
+    });
 
     res.json(data);
     console.log('Recipes by ingredients obtained successfully');
