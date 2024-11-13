@@ -5,8 +5,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-do
 import './styles/App.css'
 
 
-import Register from './components/auth/Register.js';
-import Login from './components/auth/Login.js';
+import Register from './components/login/Register.js';
+import Login from './components/login/Login.js';
 import Header from './components/header/Header.js';
 import Home from './components/recipes/Home.js';
 
@@ -19,13 +19,15 @@ function App() {
     console.log("AUTHENTIFICATED:",isAuthenticated);
   };
 
+  
+
   return (
     <Router>
       <div className="App">
       {isAuthenticated && <Header />}
 
         <Routes>
-          <Route path="/" element={<Login onLogin={handleLogin} />} />
+          <Route path="/" element={<Login onLogin={handleLogin}/>} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
         </Routes>

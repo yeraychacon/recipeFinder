@@ -21,7 +21,7 @@
     "express": "^4.21.1",
     "microservicefinder": "file:",
     "mongo": "^0.1.0",
-    "mongoose": "^8.8.0",
+    "mongoose": "^8.8.1",
     "nodemon": "^3.1.7",
     "spoonacular": "^2.0.1"
   }

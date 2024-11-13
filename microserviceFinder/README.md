@@ -11,3 +11,8 @@ You need to download the following dependencies:
 To do this, run the following command:
 
     npm install axios config dotenv express nodemon mongoose spoonacular
+
+## EXECUTION ▶️
+To run the project, simply execute the following command:
+    
+    npm start

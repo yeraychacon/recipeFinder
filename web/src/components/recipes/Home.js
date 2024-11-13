@@ -19,20 +19,22 @@ const Home = () => {
         console.log(`Searching for ${searchTerm} by ${searchType}`);
     };
 
-    useEffect(() => {
-        axios.get('/api/finder/getRecipesByIngredients')
+    
+
+    const findRecipes = async () => {
+        axios.get(`/api/finder/getRecipesByIngredients/ingredients=${searchTerm}`)
             .then((response) => {
                 console.log(response.data);
                 setRecipes(response.data);
-                setLoading(false);
-
-            }).catch((error) => {
-                setError('Error obtaining recipes');
-                console.error('Error obtaining recipes:', error);
-                setLoading(false);
-            });
+            })
+            .catch((error) => {
+                console.error('Error fetching recipes:', error);
+                setError(error);
+            })
+    };
         
-    });
+
+    
 
     return (
         <main className='home-container' role='main'>
@@ -51,36 +53,16 @@ const Home = () => {
                         <p>Enter the name of the dish you want to cook and we will find the recipe for you.</p>
                     </h2>
                 </article>
-                <form onSubmit={handleSearch} className="search-form">
-                    <div className="search-options">
-                        <label>
-                            <input
-                                type="radio"
-                                value="ingredient"
-                                checked={searchType === 'ingredient'}
-                                onChange={() => setSearchType('ingredient')}
-                            />
-                            By Ingredient
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                value="type"
-                                checked={searchType === 'type'}
-                                onChange={() => setSearchType('type')}
-                            />
-                            By Type
-                        </label>
-                    </div>
+                <div className="search-container">
                     <input
                         type="text"
+                        placeholder="Enter an ingredient"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder={`Search by ${searchType}`}
-                        className="search-input"
                     />
-                    <button type="submit" className="search-button">Search</button>
-                </form>
+                </div>
+                <button type="submit" className="search-button" onClick={findRecipes}>Search</button>
+                
             </section>
         </main>
     );

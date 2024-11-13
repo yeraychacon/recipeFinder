@@ -126,17 +126,23 @@ app.get('/finder/getRecipesByIngredients', async (req, res) => {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const ingredients = req.query.ingredients;
     const number = req.query.number || 10; // Default to 10 if not provided
+
+    console.log('Ingredients:', ingredients);
     const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredients}&number=${number}`;
 
     const response = await axios.get(url);
     const data = response.data;
 
-    data.recipes.forEach(recipe => { 
-      saveRecipe(recipe);
-    });
+    
+   
 
     res.json(data);
+
+    data.forEach(recipe => {
+      saveRecipe(recipe);
+    });
     console.log('Recipes by ingredients obtained successfully');
+    console.log(data);
   } catch (error) {
     console.error('Error obtaining recipes by ingredients:', error.message);
     res.status(500).json({ error: 'Failed to obtain recipes by ingredients' });
