@@ -1,10 +1,10 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const app = express();
 const port = 4000;
-const axios = require('axios');
-const connectDB = require('./config/db');
-const mongoose = require('mongoose');
+const axios = require("axios");
+const connectDB = require("./config/db");
+const mongoose = require("mongoose");
 
 connectDB();
 
@@ -17,24 +17,31 @@ const RecipeSchema = new mongoose.Schema({
   cookingMinutes: Number,
   readyInMinutes: Number,
   dishTypes: [String],
-  extendedIngredients: [{
-    name: String,
-    amount: Number,
-    unit: String,
-    image: String
-  }],
-  instructions: String
+  extendedIngredients: [
+    {
+      name: String,
+      amount: Number,
+      unit: String,
+      image: String,
+    },
+  ],
+  instructions: String,
 });
 
-const Recipe = mongoose.model('Recipe', RecipeSchema);
+const Recipe = mongoose.model("Recipe", RecipeSchema);
 
 async function saveRecipe(recipe) {
   try {
+    const existingRecipe = await Recipe.findOne({ id: recipe.id });
+    if (existingRecipe) {
+      console.log("Recipe already exists");
+      return;
+    }
     const newRecipe = new Recipe(recipe);
     await newRecipe.save();
-    console.log('Recipe saved successfully');
+    console.log("Recipe saved successfully");
   } catch (error) {
-    console.error('Error saving recipe:', error.message);
+    console.error("Error saving recipe:", error.message);
   }
 }
 
@@ -43,39 +50,40 @@ async function getAllRecipes() {
     const recipes = await Recipe.find();
     return recipes;
   } catch (error) {
-    console.error('Error getting all recipes:', error.message);
+    console.error("Error getting all recipes:", error.message);
   }
 }
 
 async function getRecipeById(id) {
   try {
-    const recipe = await Recipe.findOne
-    ({ id: id });
+    const recipe = await Recipe.findOne({ id: id });
     return recipe;
   } catch (error) {
-    console.error('Error getting recipe by id:', error.message);
+    console.error("Error getting recipe by id:", error.message);
   }
 }
 
-app.get('/finder/getRecipeById', async (req, res) => {
+app.get("/finder/getRecipeById", async (req, res) => {
   try {
     const id = req.query.id;
     const recipe = await getRecipeById(id);
     if (recipe) {
       const formattedData = formatRecipeData(recipe);
       res.json(formattedData);
-      console.log('Recipe obtained by id and formatted successfully');
+      console.log("Recipe obtained by id and formatted successfully");
     } else {
-      res.status(404).json({ error: 'Recipe not found' });
+      res.status(404).json({ error: "Recipe not found" });
     }
   } catch (error) {
-    console.error('Error obtaining and formatting recipe by id:', error.message);
-    res.status(500).json({ error: 'Failed to obtain and format recipe by id' });
+    console.error(
+      "Error obtaining and formatting recipe by id:",
+      error.message
+    );
+    res.status(500).json({ error: "Failed to obtain and format recipe by id" });
   }
 });
 
-
-app.get('/finder/getRandomRecipes', async (req, res) => {
+app.get("/finder/getRandomRecipes", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const number = req.query.number || 10; // Default to 10 if not provided
@@ -84,21 +92,19 @@ app.get('/finder/getRandomRecipes', async (req, res) => {
     const response = await axios.get(url);
     const data = response.data;
 
-    data.recipes.forEach(recipe => {
+    data.recipes.forEach((recipe) => {
       saveRecipe(recipe);
     });
 
     res.json(data);
-    console.log('Random recipes obtained successfully');
+    console.log("Random recipes obtained successfully");
   } catch (error) {
-    console.error('Error obtaining random recipes:', error.message);
-    res.status(500).json({ error: 'Failed to obtain random recipes' });
+    console.error("Error obtaining random recipes:", error.message);
+    res.status(500).json({ error: "Failed to obtain random recipes" });
   }
 });
 
-
-
-app.get('/finder/getRecipeInformation', async (req, res) => {
+app.get("/finder/getRecipeInformation", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const id = req.query.id;
@@ -107,48 +113,48 @@ app.get('/finder/getRecipeInformation', async (req, res) => {
     const response = await axios.get(url);
     const data = response.data;
 
-    data.recipes.forEach(recipe => {
+    data.recipes.forEach((recipe) => {
       saveRecipe(recipe);
     });
 
     const formattedData = formatRecipeData(data);
     res.json(formattedData);
-    console.log('Recipe information obtained and formatted successfully');
-    
+    console.log("Recipe information obtained and formatted successfully");
   } catch (error) {
-    console.error('Error obtaining and formatting recipe information:', error.message);
-    res.status(500).json({ error: 'Failed to obtain and format recipe information' });
+    console.error(
+      "Error obtaining and formatting recipe information:",
+      error.message
+    );
+    res
+      .status(500)
+      .json({ error: "Failed to obtain and format recipe information" });
   }
 });
 
-app.get('/finder/getRecipesByIngredients', async (req, res) => {
+app.get("/finder/getRecipesByIngredients", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const ingredients = req.query.ingredients;
     const number = req.query.number || 10; // Default to 10 if not provided
 
-    console.log('Ingredients:', ingredients);
+    console.log("Ingredients:", ingredients);
     const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredients}&number=${number}`;
 
     const response = await axios.get(url);
     const data = response.data;
 
-    
-   
-
     res.json(data);
 
-    data.forEach(recipe => {
+    data.forEach((recipe) => {
       saveRecipe(recipe);
     });
-    console.log('Recipes by ingredients obtained successfully');
+    console.log("Recipes by ingredients obtained successfully");
     console.log(data);
   } catch (error) {
-    console.error('Error obtaining recipes by ingredients:', error.message);
-    res.status(500).json({ error: 'Failed to obtain recipes by ingredients' });
+    console.error("Error obtaining recipes by ingredients:", error.message);
+    res.status(500).json({ error: "Failed to obtain recipes by ingredients" });
   }
-}
-);
+});
 
 function formatRecipeData(recipe) {
   // Obtenemos la información básica de la receta
@@ -159,16 +165,16 @@ function formatRecipeData(recipe) {
   const prepTime = recipe.preparationMinutes;
   const cookTime = recipe.cookingMinutes;
   const totalTime = recipe.readyInMinutes;
-  const dishTypes = recipe.dishTypes;  // Incluimos los tipos de plato
+  const dishTypes = recipe.dishTypes; // Incluimos los tipos de plato
 
   // Formateamos los ingredientes
-  const ingredients = recipe.extendedIngredients.map(ingredient => {
-      return {
-          name: ingredient.name,
-          amount: ingredient.amount,
-          unit: ingredient.unit,
-          image: `https://img.spoonacular.com/ingredients/${ingredient.image}`
-      };
+  const ingredients = recipe.extendedIngredients.map((ingredient) => {
+    return {
+      name: ingredient.name,
+      amount: ingredient.amount,
+      unit: ingredient.unit,
+      image: `https://img.spoonacular.com/ingredients/${ingredient.image}`,
+    };
   });
 
   // Formateamos el texto de preparación
@@ -176,21 +182,18 @@ function formatRecipeData(recipe) {
 
   // Construimos un objeto con los datos formateados
   return {
-      id: id,
-      title: title,
-      recipeImage: recipeImage,
-      servings: servings,
-      prepTime: `${prepTime} minutes`,
-      cookTime: `${cookTime} minutes`,
-      totalTime: `${totalTime} minutes`,
-      dishTypes: dishTypes,
-      ingredients: ingredients,
-      instructions: instructions
+    id: id,
+    title: title,
+    recipeImage: recipeImage,
+    servings: servings,
+    prepTime: `${prepTime} minutes`,
+    cookTime: `${cookTime} minutes`,
+    totalTime: `${totalTime} minutes`,
+    dishTypes: dishTypes,
+    ingredients: ingredients,
+    instructions: instructions,
   };
 }
-
-
-
 
 app.listen(port, () => {
   console.log(`Microservice Finder listening at http://localhost:${port}`);

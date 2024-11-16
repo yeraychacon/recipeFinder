@@ -22,8 +22,8 @@ db = pymysql.connect(
 )
 
 app = FastAPI(
-    title="API de Autenticación",
-    description="API para autenticación de usuarios y gestión de destinos favoritos.",
+    title="Authentication API",
+    description="API for user authentication and favorite destinations management.",
     version="1.0.0",
     docs_url="/docs",  
     redoc_url="/redoc",
@@ -46,12 +46,14 @@ class User(BaseModel):
 
 load_dotenv()
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def create_jwt_token(data: dict):
     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
     data.update({"exp": expiration})
-    token = jwt.encode(data, os.getenv("SECRET_KEY"), algorithm="HS256")
+    token = jwt.encode(data, SECRET_KEY, algorithm="HS256")
     return token
 
 @app.post("/auth/token")
@@ -90,7 +92,7 @@ async def register(user: User):
 
 async def getCurrentUser(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         return payload["sub"]
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
@@ -125,3 +127,16 @@ async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurre
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="localhost", port=8000)
+
+@app.delete("/auth/favRecipe/delete")
+async def delete_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
+
+    cursor = db.cursor()
+
+    query = "DELETE FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
+
+    cursor.execute(query, (user["username"], recipe["recipe_id"]))
+    db.commit()
+
+    cursor.close()
+    return {"message": "Receta eliminada de favoritos"}

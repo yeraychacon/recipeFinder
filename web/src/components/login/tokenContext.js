@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 const TokenContext = createContext();
 
-export const TokenProvider = ({ c }) => {
+export const TokenProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(null);
 
   return (
     <TokenContext.Provider value={{ authToken, setAuthToken }}>
-      {c}
+      {children}
     </TokenContext.Provider>
   );
 };
