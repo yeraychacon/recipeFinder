@@ -86,7 +86,7 @@ app.get("/finder/getRecipeById", async (req, res) => {
 app.get("/finder/getRandomRecipes", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
-    const number = req.query.number || 10; // Default to 10 if not provided
+    const number = req.query.number || 30;
     const url = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=${number}`;
 
     const response = await axios.get(url);
@@ -131,11 +131,22 @@ app.get("/finder/getRecipeInformation", async (req, res) => {
   }
 });
 
+app.delete("/finder/deleteAllRecipes", async (req, res) => {
+  try {
+    await Recipe.deleteMany({});
+    res.json({ message: "All recipes deleted successfully" });
+    console.log("All recipes deleted successfully");
+  } catch (error) {
+    console.error("Error deleting all recipes:", error.message);
+    res.status(500).json({ error: "Failed to delete all recipes" });
+  }
+});
+
 app.get("/finder/getRecipesByIngredients", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const ingredients = req.query.ingredients;
-    const number = req.query.number || 10; // Default to 10 if not provided
+    const number = req.query.number || 10;
 
     console.log("Ingredients:", ingredients);
     const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredients}&number=${number}`;
@@ -176,6 +187,11 @@ function formatRecipeData(recipe) {
       image: `https://img.spoonacular.com/ingredients/${ingredient.image}`,
     };
   });
+
+  // Eliminamos las etiquetas <li> y <ol> de las instrucciones
+  const cleanInstructions = recipe.instructions
+    ? recipe.instructions.replace(/<\/?li>/g, "").replace(/<\/?ol>/g, "")
+    : "No instructions provided.";
 
   // Formateamos el texto de preparación
   const instructions = recipe.instructions || "No instructions provided.";

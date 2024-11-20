@@ -1,56 +1,49 @@
 import logo from "../../styles/images/logo.png";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import RecipeCard from "./RecipeCard";
 
 const Home = () => {
-  const [searchType, setSearchType] = useState("ingredient");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [recipes, setRecipes] = useState(null);
-  const [error, setError] = useState(null);
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios
-      .get(`api/finder/getRecipesByIngredients/ingredients=${searchTerm}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .get("/api/finder/getRandomRecipes/")
       .then((response) => {
-        console.log(response);
+        setRecipes(response.data.recipes);
+        setLoading(false);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        setError("An error occurred. Try again later.");
+        setLoading(false);
       });
+    console.log("Recipes:", recipes);
   }, []);
-  
+
+  if (loading) return <p>Loading recipes...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
-    <div className="home">
-      <header>
-        <h1>Recipe Finder</h1>
-      </header>
-      <main>
-        <img src={logo} alt="Recipe Finder logo" />
-        <form onSubmit={useEffect}>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by ingredient"
-          />
-          <button type="submit">Search</button>
-        </form>
-        {loading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
-        {recipes && (
-          <ul>
-            {recipes.map((recipe) => (
-              <li key={recipe.id}>{recipe.name}</li>
-            ))}
-          </ul>
+    <div>
+      <div>
+        <img src={logo} alt="Recipe Finder" />
+      </div>
+      <div>
+        {recipes.length > 0 ? (
+          recipes.map((recipe) => (
+            <div
+              key={recipe.id}
+              style={{ flex: "1 1 100px", maxWidth: "2000px" }}
+            >
+              <RecipeCard recipe={recipe} />
+            </div>
+          ))
+        ) : (
+          <p>No recipes found.</p>
         )}
-      </main>
+      </div>
     </div>
   );
 };
