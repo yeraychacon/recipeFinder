@@ -1,19 +1,4 @@
 .recipe-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columnas */
   gap: 20px; /* Espacio entre las tarjetas */
   margin: 20px; /* Margen exterior */
-  padding: 10px; /* Relleno interno opcional */
-}
-
-.card {
-  border: 1px solid #ccc; /* Opcional: bordes */
-  border-radius: 8px; /* Esquinas redondeadas */
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
-  transition: transform 0.2s ease; /* Animación en hover */
-}
-
-.card:hover {
-  transform: scale(1.05); /* Ampliar tarjeta al pasar el cursor */
 }

@@ -37,7 +37,7 @@ function App() {
             path="/home"
             element={isAuthenticated ? <Home /> : <Navigate to="/" />}
           />
-          <Route path="/recipe/:id" element={<RecipeDetail />} />
+          <Route path="/recipe/:recipeId" element={<RecipeDetail />} />
         </Routes>
       </div>
     </Router>

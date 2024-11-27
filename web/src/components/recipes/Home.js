@@ -2,6 +2,7 @@ import logo from "../../styles/images/logo.png";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import RecipeCard from "./RecipeCard";
+import "../../styles/RecipeCard.css";
 
 const Home = () => {
   const [recipes, setRecipes] = useState([]);
@@ -22,8 +23,12 @@ const Home = () => {
     console.log("Recipes:", recipes);
   }, []);
 
-  if (loading) return <p>Loading recipes...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) {
+    return <p>Loading recipes...</p>;
+  }
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div>
@@ -33,10 +38,7 @@ const Home = () => {
       <div>
         {recipes.length > 0 ? (
           recipes.map((recipe) => (
-            <div
-              key={recipe.id}
-              style={{ flex: "1 1 100px", maxWidth: "2000px" }}
-            >
+            <div key={recipe.id}>
               <RecipeCard recipe={recipe} />
             </div>
           ))

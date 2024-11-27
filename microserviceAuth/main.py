@@ -10,12 +10,15 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+from fastapi.responses import JSONResponse
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 # configuration
 db = pymysql.connect(
     host="localhost",
     user="root",
-    password="1234",
+    password="root",
     db="recipefinder",
     charset="utf8mb4",
     cursorclass=pymysql.cursors.DictCursor
@@ -47,6 +50,7 @@ class User(BaseModel):
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -124,10 +128,6 @@ async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurre
     cursor.close()
     return {"message": "Receta añadida a favoritos"}
     
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="localhost", port=8000)
-
 @app.delete("/auth/favRecipe/delete")
 async def delete_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
 
@@ -140,3 +140,42 @@ async def delete_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCu
 
     cursor.close()
     return {"message": "Receta eliminada de favoritos"}
+
+
+
+
+@app.post("/auth/google")
+async def google_login(token: str):
+        try:
+            print("hola")
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                raise HTTPException(status_code=401, detail="Invalid token issuer")
+
+            user_id = idinfo['sub']
+            email = idinfo['email']
+            name = idinfo.get('name', '')
+            
+            cursor = db.cursor()
+            query = "SELECT * FROM user WHERE email=%s"
+            cursor.execute(query, (email,))
+            user = cursor.fetchone()
+
+            if not user:
+                query = "INSERT INTO user (username, email) VALUES (%s, %s)"
+                cursor.execute(query, (name, email))
+                db.commit()
+                user = {"username": name, "email": email}
+
+            token = create_jwt_token({"sub": user["username"]})
+            cursor.close()
+            return {"access_token": token, "token_type": "bearer"}
+        except ValueError:
+            print("HOLA")
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8000)
