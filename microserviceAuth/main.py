@@ -8,6 +8,7 @@ import datetime
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+from requests_oauthlib import OAuth2Session
 from dotenv import load_dotenv
 import os
 from fastapi.responses import JSONResponse
@@ -145,36 +146,27 @@ async def delete_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCu
 
 
 @app.post("/auth/google")
-async def google_login(token: str):
-        try:
-            print("hola")
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
-            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-                raise HTTPException(status_code=401, detail="Invalid token issuer")
-
-            user_id = idinfo['sub']
-            email = idinfo['email']
-            name = idinfo.get('name', '')
+async def google_login(user: dict):
+    cursor = db.cursor()
+    print(user)
             
-            cursor = db.cursor()
-            query = "SELECT * FROM user WHERE email=%s"
-            cursor.execute(query, (email,))
-            user = cursor.fetchone()
+    # Check if the user already exists in the database
+    query = "SELECT * FROM user WHERE email=%s"
+    cursor.execute(query, (user["credentialResponseDecoded"]["email"],))
+    
+    existing_user = cursor.fetchone()
 
-            if not user:
-                query = "INSERT INTO user (username, email) VALUES (%s, %s)"
-                cursor.execute(query, (name, email))
-                db.commit()
-                user = {"username": name, "email": email}
-
-            token = create_jwt_token({"sub": user["username"]})
-            cursor.close()
-            return {"access_token": token, "token_type": "bearer"}
-        except ValueError:
-            print("HOLA")
-            raise HTTPException(status_code=401, detail="Invalid token")
-
-
+    if existing_user:
+        cursor.close()
+        token = create_jwt_token({"sub": existing_user["username"]})
+        return {"access_token": token, "token_type": "bearer"}
+    else:
+        query = "INSERT INTO user (username, email, phone, password) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (user["credentialResponseDecoded"]["name"], user["credentialResponseDecoded"]["email"], "",""))
+        db.commit()
+        cursor.close()
+        token = create_jwt_token({"sub": user["credentialResponseDecoded"]["name"]})
+        return {"access_token": token, "token_type": "bearer"}
 
 if __name__ == "__main__":
     import uvicorn

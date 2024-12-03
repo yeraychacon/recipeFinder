@@ -10,7 +10,7 @@ const RecipeDetail = () => {
   useEffect(() => {
     console.log("Recipe ID:", recipeId);
     axios
-      .get(`api/finder/getRecipeById/?id=${recipeId}`)
+      .get(`/api/finder/getRecipeById/?id=${recipeId}`)
       .then((response) => {
         console.log("Recipe:", response.data);
         setRecipe(response.data);
@@ -30,13 +30,19 @@ const RecipeDetail = () => {
 
   return (
     <div>
-      <h1>{recipe.name}</h1>
-      <p>{recipe.description}</p>
-      {recipe.ingredients.map((ingredient) => (
-        <div key={ingredient.id}>
-          <IngredientCard ingredient={ingredient} />
-        </div>
-      ))}
+      <h1>{recipe.title}</h1>
+      <img src={recipe.image} alt={recipe.title} />
+      <p>Servings: {recipe.servings}</p>
+      <p>Preparation Time: {recipe.preparationMinutes} minutes</p>
+      <p>Cooking Time: {recipe.cookingMinutes} minutes</p>
+      <p>Ready In: {recipe.totalTime} minutes</p>
+      <h2>Dish Types</h2>
+      <ul>
+        {recipe.dishTypes.map((dishType) => (
+          <li key={dishType}>{dishType}</li>
+        ))}
+      </ul>
+
       <p>Instructions: {sanitizeInstructions(recipe.instructions)}</p>
     </div>
   );

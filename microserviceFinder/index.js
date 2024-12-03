@@ -71,8 +71,10 @@ app.get("/finder/getRecipeById", async (req, res) => {
       const formattedData = formatRecipeData(recipe);
       res.json(formattedData);
       console.log("Recipe obtained by id and formatted successfully");
+      console.log(formattedData);
     } else {
       res.status(404).json({ error: "Recipe not found" });
+      console.log("Recipe not found");
     }
   } catch (error) {
     console.error(
@@ -168,6 +170,7 @@ app.get("/finder/getRecipesByIngredients", async (req, res) => {
 });
 
 function formatRecipeData(recipe) {
+  console.log("Recipe:", recipe);
   // Obtenemos la información básica de la receta
   const id = recipe.id;
   const title = recipe.title;
