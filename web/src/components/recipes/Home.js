@@ -35,7 +35,7 @@ const Home = () => {
       <div>
         <img src={logo} alt="Recipe Finder" />
       </div>
-      <div>
+      <div className="recipe-container">
         {recipes.length > 0 ? (
           recipes.map((recipe) => (
             <div key={recipe.id}>

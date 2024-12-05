@@ -85,6 +85,25 @@ app.get("/finder/getRecipeById", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /finder/getAllRecipes:
+ *  get:
+ *   description: Use to request random recipes from the Spoonacular API
+ *   responses:
+ *    200:
+ *      description: Random recipes obtained successfully
+ *      content:
+ *       application/json:
+ *       schema:
+ *       type: array
+ *       items:
+ *        $ref: '#/components/schemas/Recipe'
+ *    500:
+ *      description: Error obtaining random recipes
+ *
+ *
+ */
 app.get("/finder/getRandomRecipes", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
@@ -103,6 +122,49 @@ app.get("/finder/getRandomRecipes", async (req, res) => {
   } catch (error) {
     console.error("Error obtaining random recipes:", error.message);
     res.status(500).json({ error: "Failed to obtain random recipes" });
+  }
+});
+
+/*
+ * @swagger
+ * /finder/getRecipeIngredients:
+ *  get:
+ *   description: Use to request all recipes from the database
+ *   responses:
+ *   '200':
+ *      description: Recipe ingredients image sent successfully
+ *      content:
+ *       application/json:
+ *       schema:
+ *       type: object
+ *      properties:
+ *      recipes:
+ *      type: array
+ *  500:
+ *    description: Error obtaining recipe ingredients image
+ *
+ */
+app.get("/finder/getRecipeIngredients", async (req, res) => {
+  try {
+    const apiKey = process.env.SPOONACULAR_API_KEY;
+    const id = req.query.id;
+    const url = `https://api.spoonacular.com/recipes/${id}/ingredientWidget.png?apiKey=${apiKey}`;
+
+    // Hacer una solicitud a la URL de la imagen
+    const response = await axios.get(url, { responseType: "arraybuffer" });
+
+    // Establecer el encabezado Content-Type basado en el tipo de imagen (PNG en este caso)
+    res.set("Content-Type", "image/png");
+
+    // Enviar los datos de la imagen directamente
+    res.send(response.data);
+
+    console.log("Recipe ingredients image sent successfully");
+  } catch (error) {
+    console.error("Error obtaining recipe ingredients image:", error.message);
+    res
+      .status(500)
+      .json({ error: "Failed to obtain recipe ingredients image" });
   }
 });
 
