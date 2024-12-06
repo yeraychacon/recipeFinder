@@ -1,8 +1,7 @@
-import logo from "../../styles/images/logo.png";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import RecipeCard from "./RecipeCard";
-import "../../styles/RecipeCard.css";
+import "../../styles/RecipeList.css";
 
 const Home = () => {
   const [recipes, setRecipes] = useState([]);
@@ -32,9 +31,6 @@ const Home = () => {
 
   return (
     <div>
-      <div>
-        <img src={logo} alt="Recipe Finder" />
-      </div>
       <div className="recipe-container">
         {recipes.length > 0 ? (
           recipes.map((recipe) => (

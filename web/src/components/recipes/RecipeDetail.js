@@ -21,7 +21,6 @@ const RecipeDetail = () => {
         axios
           .get(`/api/finder/getRecipeIngredients/?id=${recipeId}`)
           .then((response) => {
-            console.log("Ingredients:", response.data);
             setIngredients(response.data);
             setPeticion(`/api/finder/getRecipeIngredients/?id=${recipeId}`);
           })

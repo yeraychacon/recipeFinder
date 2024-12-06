@@ -13,6 +13,7 @@ import Login from "./components/login/Login.js";
 import Header from "./components/header/Header.js";
 import Home from "./components/recipes/Home.js";
 import RecipeDetail from "./components/recipes/RecipeDetail.js";
+import FavoritesList from "./components/recipes/FavoritesList.js";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,6 +39,7 @@ function App() {
             element={isAuthenticated ? <Home /> : <Navigate to="/" />}
           />
           <Route path="/recipe/:recipeId" element={<RecipeDetail />} />
+          <Route path="/favorites" element={<FavoritesList />} />
         </Routes>
       </div>
     </Router>

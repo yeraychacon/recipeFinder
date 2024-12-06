@@ -1,0 +1,22 @@
+.recipe-container {
+  display: grid;
+  gap: 20px; /* Espaciado entre las tarjetas */
+  padding: 20px;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); /* Ajuste dinámico */
+  justify-content: center;
+}
+
+/* Opcional: Estilo de las tarjetas */
+.recipe-container div {
+  border-radius: 10px;
+
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.recipe-container div:hover {
+  transform: scale(1.05);
+}

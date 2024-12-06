@@ -1,80 +1,78 @@
+/* Estilo general del header */
 .header {
-  position: relative;
-  background-image: url("");
-  background-size: cover;
-  background-position: center;
-  height: 15vh;
-  display: inline-block;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  text-align: center;
-}
-
-.header h1 {
-  font-size: 3.5em;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
-  display: inline-block;
-  justify-content: center;
-  align-items: center;
-  margin: 3vh;
-  margin-left: 70vh;
-}
-
-.header p {
-  font-size: 1.5em;
-}
-
-.menu-container {
-  margin: 0;
-  display: inline-block;
-  margin-left: 25vh;
-}
-
-.menu {
   display: flex;
-  justify-content: center;
   align-items: center;
-}
-
-.menu a {
-  text-decoration: none;
-  color: #000000;
-  font-size: 1.2em;
-  margin: 0 20px;
-}
-
-.menu a:hover {
-  color: #ffcc00;
-}
-
-.separator {
-  width: 50%;
-  height: 1px;
-  background-color: #fff;
-  margin: 10px auto;
-}
-
-.profile-image {
+  justify-content: space-between;
   background-color: #333;
-  color: #fff;
-  text-align: center;
-  margin-top: 20px;
+  padding: 10px 20px;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 
-.profile-image img {
-  color: #fff;
-  max-width: 100px;
-  border: 1px solid #ddd;
-  border-radius: 50%;
+/* Logo */
+.header-logo {
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
+/* Búsqueda */
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-input {
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.search-button {
+  padding: 5px 10px;
+  font-size: 16px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #777;
+}
+
+/* Navegación */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #ddd;
+}
+
+/* Botón de cerrar sesión */
 .logout-button {
-  background-color: transparent;
-  font-size: 1.1em;
+  padding: 5px 10px;
+  font-size: 16px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .logout-button:hover {
-  color: #8eb8ce;
+  background-color: #d62828;
 }
