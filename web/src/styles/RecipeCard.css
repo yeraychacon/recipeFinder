@@ -46,3 +46,9 @@
   transform: scale(1.2);
   color: gold;
 }
+
+.recipe-container {
+  color: black;
+  align-items: center;
+}
+

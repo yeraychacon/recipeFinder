@@ -210,7 +210,7 @@ app.get("/finder/getRecipesByIngredients", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const ingredients = req.query.ingredients;
-    const number = req.query.number || 10;
+    const number = req.query.number || 30;
 
     console.log("Ingredients:", ingredients);
     const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredients}&number=${number}`;

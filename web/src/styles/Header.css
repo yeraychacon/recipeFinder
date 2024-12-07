@@ -7,6 +7,7 @@
   padding: 10px 20px;
   color: white;
   font-family: Arial, sans-serif;
+  position: relative;
 }
 
 /* Logo */
@@ -16,7 +17,7 @@
   cursor: pointer;
 }
 
-/* Búsqueda */
+/* Búsqueda en el header */
 .header-search {
   display: flex;
   align-items: center;
@@ -28,6 +29,7 @@
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  min-width: 200px;
 }
 
 .search-button {
@@ -49,8 +51,17 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap; /* Esto permite que el contenido se ajuste si es necesario */
 }
 
+/* Navegación en pantallas grandes */
+.desktop-nav {
+  display: flex; /* Asegura que las opciones estén una al lado de la otra */
+  align-items: center;
+  gap: 15px;
+}
+
+/* Opciones de navegación */
 .nav-link {
   text-decoration: none;
   color: white;
@@ -75,4 +86,98 @@
 
 .logout-button:hover {
   background-color: #d62828;
+}
+
+/* Responsividad */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.hamburger-line {
+  width: 30px;
+  height: 4px;
+  background-color: white;
+}
+
+/* Menú lateral */
+.sidebar-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #333;
+  width: 250px;
+  height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1000;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+}
+
+.close-button {
+  background-color: transparent;
+  color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-nav .nav-link {
+  color: white;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.sidebar-nav .nav-link:hover {
+  color: #ddd;
+}
+
+/* Menú lateral en pantallas grandes */
+.sidebar-menu .nav-link {
+  color: white;
+  font-size: 18px;
+}
+
+/* Medios de pantallas pequeñas */
+@media screen and (max-width: 768px) {
+  /* En pantallas pequeñas, esconder la navegación normal y mostrar el menú hamburguesa */
+  .desktop-nav {
+    display: none;
+  }
+
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .sidebar-menu {
+    transform: translateX(0);
+    z-index: 1000;
+  }
+
+  .search-input {
+    min-width: 150px;
+  }
+  .search-button {
+    margin-top: 20px;
+    padding: 8px 15px; /* Hacer el botón más ancho y con más padding */
+    min-width: 120px; /* Aumentar el ancho mínimo */
+  }
+
+  .logout-button {
+    padding: 8px 15px;
+    min-width: 120px;
+    align-self: center;
+  }
 }

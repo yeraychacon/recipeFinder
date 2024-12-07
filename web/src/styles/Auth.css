@@ -78,3 +78,11 @@ img {
 .auth-link:hover {
   text-decoration: underline;
 }
+
+/* Mensaje de error */
+.error-message {
+  color: red;
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  text-align: center;
+}

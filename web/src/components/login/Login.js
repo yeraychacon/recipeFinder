@@ -9,9 +9,22 @@ import { jwtDecode } from "jwt-decode";
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // Estado para manejar el error
   const navigate = useNavigate();
   const { setAuthToken } = useToken();
+  
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter") {
+        login();
+      }
+    };
 
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [username, password]);
   // Función para el login convencional
   const login = async () => {
     try {
@@ -36,12 +49,14 @@ const Login = ({ onLogin }) => {
       }
     } catch (error) {
       console.error("Login error:", error);
+      setErrorMessage("Incorrect username or password."); // Mostrar mensaje de error
     }
   };
 
   // Manejador de error para el inicio de sesión con Google
   const handleGoogleFailure = (error) => {
     console.error("Error de inicio de sesión con Google:", error);
+    setErrorMessage("Error al iniciar sesión con Google. Inténtalo de nuevo."); // Mensaje de error para Google
   };
 
   // Implementación de Google One Tap Login
@@ -56,6 +71,9 @@ const Login = ({ onLogin }) => {
     },
     onError: (error) => {
       console.error("Google One Tap error:", error);
+      setErrorMessage(
+        "Error al iniciar sesión con Google. Inténtalo de nuevo."
+      ); // Mensaje de error
     },
   });
 
@@ -74,12 +92,14 @@ const Login = ({ onLogin }) => {
       }
     } catch (error) {
       console.error("Google login error:", error);
+      setErrorMessage("Error login with google."); // Mensaje de error para Google
     }
   };
 
   return (
     <div className="auth-container">
       <h1>Iniciar Sesión</h1>
+      {/* Mostrar mensaje de error */}
       <div className="login-input-container">
         <input
           type="text"
@@ -94,6 +114,7 @@ const Login = ({ onLogin }) => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}{" "}
       <div className="auth-button-container">
         <button className="auth-button" onClick={login}>
           Login
@@ -101,7 +122,7 @@ const Login = ({ onLogin }) => {
         <br />
         <br />
         <a href="/register" className="auth-link">
-          ¿No tienes cuenta? Registrate
+          ¿No tienes cuenta? Regístrate
         </a>
         <br />
         <br />
