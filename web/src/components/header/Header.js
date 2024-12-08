@@ -4,7 +4,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-
 const Header = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -60,7 +59,7 @@ const Header = () => {
           </button>
 
           <div className="sidebar-search">
-            <form onSubmit={handleSearch}>
+            <form className="header-search" onSubmit={handleSearch}>
               <input
                 type="text"
                 name="search"
@@ -70,7 +69,15 @@ const Header = () => {
                 onChange={(e) => setQuery(e.target.value)}
               />
               <button type="submit" className="search-button">
-                Search
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="black"
+                >
+                  <path d="M15.9 14.32h-.79l-.28-.27a6.4 6.4 0 0 0 1.48-5.26 6.5 6.5 0 1 0-5.26 5.26l.27.28v.79l4.9 4.88 1.48-1.48zm-5.4 0A4.5 4.5 0 1 1 14 9.82a4.49 4.49 0 0 1-3.5 4.5z"></path>
+                </svg>
               </button>
             </form>
           </div>
@@ -108,9 +115,18 @@ const Header = () => {
             onChange={(e) => setQuery(e.target.value)}
           />
           <button type="submit" className="search-button">
-            Search
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="black"
+            >
+              <path d="M15.9 14.32h-.79l-.28-.27a6.4 6.4 0 0 0 1.48-5.26 6.5 6.5 0 1 0-5.26 5.26l.27.28v.79l4.9 4.88 1.48-1.48zm-5.4 0A4.5 4.5 0 1 1 14 9.82a4.49 4.49 0 0 1-3.5 4.5z"></path>
+            </svg>
           </button>
         </form>
+
         <Link to="/favorites" className="nav-link">
           Favorites
         </Link>
