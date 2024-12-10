@@ -12,7 +12,7 @@ const Login = ({ onLogin }) => {
   const [errorMessage, setErrorMessage] = useState(""); // Estado para manejar el error
   const navigate = useNavigate();
   const { setAuthToken } = useToken();
-  
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Enter") {

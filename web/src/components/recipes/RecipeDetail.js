@@ -37,10 +37,6 @@ const RecipeDetail = () => {
     return <div className="loading">Loading...</div>;
   }
 
-  const sanitizeInstructions = (instructions) => {
-    return instructions.replace(/<[^>]*>/g, "").replace(/\n/g, " ");
-  };
-
   const cleanHTML = DOMPurify.sanitize(recipe.instructions);
 
   return (

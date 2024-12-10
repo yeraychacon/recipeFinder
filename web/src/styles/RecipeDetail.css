@@ -7,6 +7,10 @@
   color: #333;
   padding: 20px;
 }
+
+.container-head {
+  width: auto;
+}
 @media (min-width: 768px) {
   .recipe-detail {
     flex-direction: row; /* En pantallas grandes, los hijos estarán uno al lado del otro */

@@ -26,7 +26,7 @@ db = pymysql.connect(
 )
 
 app = FastAPI(
-    title="Authentication API",
+    title="Authentication API", 
     description="API for user authentication and favorite destinations management.",
     version="1.0.0",
     docs_url="/docs",  
