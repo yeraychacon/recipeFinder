@@ -1,4 +1,4 @@
-fastapi==0.115.0
+fastapi==0.115.4
 pydantic==2.9.2
 uvicorn==0.32.0
 mysql-connector-python==8.1.0
@@ -10,4 +10,4 @@ python-dotenv==0.20.0
 python-multipart==0.0.5
 google-auth==2.36.0
 requests==2.32.3
-request-oauthlib==2.0.0
+requests-oauthlib==2.0.0

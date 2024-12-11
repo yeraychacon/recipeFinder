@@ -1,1 +1,60 @@
- 
+services:
+  frontend:
+    build:
+      context: ./web # Carpeta del frontend
+      dockerfile: dockerfile.yml
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+    networks:
+      - app_network
+
+  microservicio_finder:
+    build:
+      context: ./microserviceFinder 
+      dockerfile: dockerfile.yml
+    ports:
+      - "4000:4000"
+    networks:
+      - app_network
+
+  microservicio_auth:
+    build:
+      context: ./microserviceAuth
+      dockerfile: dockerfile.yml
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql_db
+    networks:
+      - app_network
+
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: recipefinder
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./microserviceAuth/db:/docker-entrypoint-initdb.d
+    networks:
+      - app_network
+
+  gateway:
+    build:
+      context: ./gateway # Carpeta de gateway
+      dockerfile: dockerfile.yml 
+    ports:
+      - "5000:5000"
+    depends_on:
+      - microservicio_finder
+      - microservicio_auth
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

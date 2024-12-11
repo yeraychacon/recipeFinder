@@ -27,7 +27,7 @@ db = pymysql.connect(
 
 app = FastAPI(
     title="Authentication API", 
-    description="API for user authentication and favorite destinations management.",
+    description="API for user authentication and favorite recipes management.",
     version="1.0.0",
     docs_url="/docs",  
     redoc_url="/redoc",
@@ -60,6 +60,15 @@ def create_jwt_token(data: dict):
     data.update({"exp": expiration})
     token = jwt.encode(data, SECRET_KEY, algorithm="HS256")
     return token
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return payload["sub"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 @app.post("/auth/token")
 async def generate_token(from_data: OAuth2PasswordRequestForm = Depends()):
@@ -106,37 +115,42 @@ async def getCurrentUser(token: str = Depends(oauth2_scheme)):
     
 class AddFavoriteRecipe(BaseModel):
     recipe: str
+
+class DeleteFavoriteRecipe(BaseModel):
+    recipe: str
+
+class FavoriteRecipe(BaseModel):
+    recipeId: str
     
 
 @app.post("/auth/favRecipe/add")
 async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
-
     cursor = db.cursor()
 
-    query = "INSERT INTO favoriterecipes(username, idRecipe) VALUES (%s, %s)"
-
-    cursor.execute(query, (recipe["recipe_id"], user["username"]))
+    # Verifica si ya existe la receta en favoritos
+    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
+    cursor.execute(query, (user, recipe.recipe))
     existing_favorite = cursor.fetchone()
 
     if existing_favorite:
         cursor.close()
         raise HTTPException(status_code=400, detail="Receta ya añadida a favoritos")
-    
+
+    # Inserta la receta si no existe
     insert_query = "INSERT INTO favoriterecipes(username, idRecipe) VALUES (%s, %s)"
-    cursor.execute(insert_query, (user["username"], recipe["recipe_id"]))
+    cursor.execute(insert_query, (user, recipe.recipe))
     db.commit()
 
     cursor.close()
     return {"message": "Receta añadida a favoritos"}
+
     
 @app.delete("/auth/favRecipe/delete")
-async def delete_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
-
+async def delete_fav_recipe(recipe: DeleteFavoriteRecipe, user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
 
     query = "DELETE FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
-
-    cursor.execute(query, (user["username"], recipe["recipe_id"]))
+    cursor.execute(query, (user, recipe.recipe))  # Usar recipe.recipe
     db.commit()
 
     cursor.close()
@@ -144,6 +158,28 @@ async def delete_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCu
 
 
 
+@app.post("/auth/favRecipe/check")
+async def check_fav_recipe(recipe: FavoriteRecipe, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+
+    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
+
+    cursor.execute(query, (user, recipe.recipeId))
+    existing_favorite = cursor.fetchone()
+
+    cursor.close()
+    return {"isFavorite": existing_favorite is not None}
+
+@app.get("/auth/favRecipe/list")
+async def list_fav_recipe(user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+
+    query = "SELECT idRecipe FROM favoriterecipes WHERE username=%s"
+    cursor.execute(query, (user,))
+    fav_recipes = cursor.fetchall()
+    
+    cursor.close()
+    return fav_recipes
 
 @app.post("/auth/google")
 async def google_login(user: dict):
