@@ -87,7 +87,7 @@ app.get("/finder/getRecipeById", async (req, res) => {
 
 /**
  * @swagger
- * /finder/getAllRecipes:
+ * /finder/getRandomRecipes:
  *  get:
  *   description: Use to request random recipes from the Spoonacular API
  *   responses:
