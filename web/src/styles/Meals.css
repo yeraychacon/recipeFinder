@@ -1,0 +1,63 @@
+/* MealPlanApp.css */
+
+/* Estilo general */
+.meal-plan-app {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.options-container {
+  margin-top: 20px;
+  text-align: center;
+  border: 1px solid #000000;
+}
+
+.meal-options select,
+.meal-options button {
+  padding: 10px;
+  margin: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Estilo para el horario de clases */
+.schedule-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.days-header {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.day-column {
+  text-align: center;
+  font-weight: bold;
+}
+
+.meal-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-row {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.meal-cell {
+  width: 100px;
+  padding: 10px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.meal-cell p {
+  margin: 5px 0;
+}

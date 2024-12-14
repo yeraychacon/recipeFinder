@@ -30,6 +30,122 @@ const RecipeSchema = new mongoose.Schema({
 
 const Recipe = mongoose.model("Recipe", RecipeSchema);
 
+const MealPlanSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["day", "week"], // Define si es un plan diario o semanal
+    required: true,
+  },
+  id: {
+    type: Number,
+    required: true,
+    unique: true,
+  },
+  meals: {
+    // Para planes diarios: contiene directamente los objetos con IDs de recetas
+    type: [
+      {
+        id: {
+          type: Number, // ID de la receta
+          required: true,
+        },
+      },
+    ],
+    required: function () {
+      return this.type === "daily";
+    },
+  },
+  week: {
+    // Para planes semanales: contiene un objeto con los días de la semana
+    type: {
+      monday: {
+        type: [
+          {
+            id: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        default: [],
+      },
+      tuesday: {
+        type: [
+          {
+            id: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        default: [],
+      },
+      wednesday: {
+        type: [
+          {
+            id: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        default: [],
+      },
+      thursday: {
+        type: [
+          {
+            id: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        default: [],
+      },
+      friday: {
+        type: [
+          {
+            id: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        default: [],
+      },
+      saturday: {
+        type: [
+          {
+            id: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        default: [],
+      },
+      sunday: {
+        type: [
+          {
+            id: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        default: [],
+      },
+    },
+    required: function () {
+      return this.type === "weekly";
+    },
+  },
+});
+
+const MealPlan = mongoose.model("MealPlan", MealPlanSchema);
+
+module.exports = { Recipe, MealPlan };
+
 async function saveRecipe(recipe) {
   try {
     const existingRecipe = await Recipe.findOne({ id: recipe.id });
@@ -42,6 +158,72 @@ async function saveRecipe(recipe) {
     console.log("Recipe saved successfully");
   } catch (error) {
     console.error("Error saving recipe:", error.message);
+  }
+}
+
+async function saveMealPlan(mealPlanData) {
+  try {
+    // Verifica si el MealPlan es de tipo "week"
+    console.log("mealPlanData:", mealPlanData); // Depuración: Ver los datos recibidos
+    if (mealPlanData.type === "week") {
+      // Asegúrate de que cada día de la semana sea un arreglo
+      const weekData = {
+        monday: Array.isArray(mealPlanData.week.monday)
+          ? mealPlanData.week.monday.map((meal) => ({ id: meal.id }))
+          : [],
+        tuesday: Array.isArray(mealPlanData.week.tuesday)
+          ? mealPlanData.week.tuesday.map((meal) => ({ id: meal.id }))
+          : [],
+        wednesday: Array.isArray(mealPlanData.week.wednesday)
+          ? mealPlanData.week.wednesday.map((meal) => ({ id: meal.id }))
+          : [],
+        thursday: Array.isArray(mealPlanData.week.thursday)
+          ? mealPlanData.week.thursday.map((meal) => ({ id: meal.id }))
+          : [],
+        friday: Array.isArray(mealPlanData.week.friday)
+          ? mealPlanData.week.friday.map((meal) => ({ id: meal.id }))
+          : [],
+        saturday: Array.isArray(mealPlanData.week.saturday)
+          ? mealPlanData.week.saturday.map((meal) => ({ id: meal.id }))
+          : [],
+        sunday: Array.isArray(mealPlanData.week.sunday)
+          ? mealPlanData.week.sunday.map((meal) => ({ id: meal.id }))
+          : [],
+      };
+
+      // Verifica si alguna de las propiedades de la semana está vacía (depuración)
+      console.log("Week data:", weekData);
+
+      // Si todos los días están vacíos, lanza un error
+      if (Object.values(weekData).every((day) => day.length === 0)) {
+        throw new Error("No meals provided for any day of the week.");
+      }
+
+      const mealPlan = new MealPlan({
+        id: mealPlanData.id, // ID del MealPlan
+        type: "week", // Tipo de MealPlan
+        week: weekData, // Los datos procesados de la semana
+      });
+
+      // Guarda el MealPlan semanal
+      await mealPlan.save();
+      console.log("Weekly Meal Plan saved successfully!");
+    } else if (mealPlanData.type === "day") {
+      // Para un plan diario
+      const mealPlan = new MealPlan({
+        id: mealPlanData.id, // ID del MealPlan
+        type: "day", // Tipo de MealPlan
+        meals: mealPlanData.meals.map((meal) => ({ id: meal.id })), // Guarda las recetas para el día
+      });
+
+      // Guarda el MealPlan diario
+      await mealPlan.save();
+      console.log("Daily Meal Plan saved successfully!");
+    } else {
+      throw new Error("Invalid meal plan type.");
+    }
+  } catch (error) {
+    console.error("Error saving meal plan:", error.message);
   }
 }
 
@@ -195,17 +377,6 @@ app.get("/finder/getRecipeInformation", async (req, res) => {
   }
 });
 
-app.delete("/finder/deleteAllRecipes", async (req, res) => {
-  try {
-    await Recipe.deleteMany({});
-    res.json({ message: "All recipes deleted successfully" });
-    console.log("All recipes deleted successfully");
-  } catch (error) {
-    console.error("Error deleting all recipes:", error.message);
-    res.status(500).json({ error: "Failed to delete all recipes" });
-  }
-});
-
 app.get("/finder/getRecipesByIngredients", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
@@ -228,6 +399,45 @@ app.get("/finder/getRecipesByIngredients", async (req, res) => {
   } catch (error) {
     console.error("Error obtaining recipes by ingredients:", error.message);
     res.status(500).json({ error: "Failed to obtain recipes by ingredients" });
+  }
+});
+
+app.get("/finder/generateMealPlan", async (req, res) => {
+  try {
+    const apiKey = process.env.SPOONACULAR_API_KEY;
+    const timeFrame = req.query.timeFrame || "day";
+    const url = `https://api.spoonacular.com/mealplanner/generate?apiKey=${apiKey}&timeFrame=${timeFrame}`;
+
+    const response = await axios.get(url);
+    const data = response.data;
+
+    // Generate unique 5-digit IDs for each meal
+    const existingMealPlans = await MealPlan.find();
+    const existingIds = new Set(existingMealPlans.map((meal) => meal.id));
+
+    // Generate unique ID for the meal plan
+    let mealPlanId;
+    do {
+      mealPlanId = Math.floor(10000 + Math.random() * 90000);
+    } while (existingIds.has(mealPlanId));
+    existingIds.add(mealPlanId);
+
+    // Save the meal plan with the correct type
+    const mealPlan = {
+      id: mealPlanId,
+      type: timeFrame === "day" ? "day" : "week",
+      meals: timeFrame === "day" ? data.meals : undefined,
+      week: timeFrame === "week" ? data.week : undefined,
+    };
+    console.log("Meal plan:", mealPlan);
+
+    await saveMealPlan(mealPlan);
+
+    res.json(mealPlan);
+    console.log("Meal plan generated and saved successfully");
+  } catch (error) {
+    console.error("Error generating meal plan:", error.message);
+    res.status(500).json({ error: "Failed to generate meal plan" });
   }
 });
 

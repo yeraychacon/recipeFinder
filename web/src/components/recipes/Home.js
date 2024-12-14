@@ -7,28 +7,42 @@ const Home = () => {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1); // Página inicial
 
-  useEffect(() => {
+  const fetchRecipes = (isInitial = false) => {
+    setLoading(true);
     axios
-      .get("/api/finder/getRandomRecipes/")
+      .get(`/api/finder/getRandomRecipes?page=${page}`)
       .then((response) => {
-        setRecipes(response.data.recipes);
+        const newRecipes = response.data.recipes.filter(
+          (recipe) => !recipes.some((r) => r.id === recipe.id) // Evitar duplicados
+        );
+        setRecipes(isInitial ? newRecipes : [...recipes, ...newRecipes]);
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         setError("An error occurred. Try again later.");
         setLoading(false);
       });
-    console.log("Recipes:", recipes);
+  };
+
+  useEffect(() => {
+    fetchRecipes(true); // Cargar recetas iniciales
   }, []);
 
-  if (loading) {
+  const loadMoreRecipes = () => {
+    setPage((prevPage) => prevPage + 1);
+    fetchRecipes();
+  };
+
+  if (loading && recipes.length === 0) {
     return (
       <div className="loading-container">
         <div className="spinner"></div>
       </div>
     );
   }
+
   if (error) {
     return <p>{error}</p>;
   }
@@ -49,6 +63,11 @@ const Home = () => {
         ) : (
           <p>No recipes found.</p>
         )}
+      </div>
+      <div className="load-more-container">
+        <button className="load-more-button" onClick={loadMoreRecipes}>
+          Load More Recipes
+        </button>
       </div>
     </div>
   );

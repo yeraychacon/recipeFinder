@@ -84,12 +84,20 @@ const Header = () => {
 
           <nav className="sidebar-nav">
             <Link
+              to="/meals"
+              className="nav-link"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Meal Planer
+            </Link>
+            <Link
               to="/favorites"
               className="nav-link"
               onClick={() => setIsMenuOpen(false)}
             >
               Favorites
             </Link>
+
             <button
               onClick={() => {
                 handleLogout();
@@ -126,7 +134,9 @@ const Header = () => {
             </svg>
           </button>
         </form>
-
+        <Link to="/meals" className="nav-link">
+          Meal Planer
+        </Link>
         <Link to="/favorites" className="nav-link">
           Favorites
         </Link>
