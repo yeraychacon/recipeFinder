@@ -148,7 +148,7 @@ app.get("/finder/getRecipeIngredients", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const id = req.query.id;
-    const url = `https://api.spoonacular.com/recipes/${id}/ingredientWidget.png?apiKey=${apiKey}`;
+    const url = `https://api.spoonacular.com/recipes/${id}/ingredientWidget.png?apiKey=${apiKey}&measure=metric`;
 
     // Hacer una solicitud a la URL de la imagen
     const response = await axios.get(url, { responseType: "arraybuffer" });
@@ -236,7 +236,7 @@ function formatRecipeData(recipe) {
   // Obtenemos la información básica de la receta
   const id = recipe.id;
   const title = recipe.title;
-  const recipeImage = recipe.image;
+  const image = recipe.image;
   const servings = recipe.servings;
   const prepTime = recipe.preparationMinutes;
   const cookTime = recipe.cookingMinutes;
@@ -249,7 +249,7 @@ function formatRecipeData(recipe) {
       name: ingredient.name,
       amount: ingredient.amount,
       unit: ingredient.unit,
-      image: `https://img.spoonacular.com/ingredients/${ingredient.image}`,
+      image: ingredient.image,
     };
   });
 
@@ -265,7 +265,7 @@ function formatRecipeData(recipe) {
   return {
     id: id,
     title: title,
-    recipeImage: recipeImage,
+    image: image,
     servings: servings,
     prepTime: `${prepTime} minutes`,
     cookTime: `${cookTime} minutes`,

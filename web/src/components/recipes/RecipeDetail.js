@@ -34,7 +34,11 @@ const RecipeDetail = () => {
   }, [recipeId]);
 
   if (!recipe) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+      </div>
+    );
   }
 
   const cleanHTML = DOMPurify.sanitize(recipe.instructions);
@@ -43,7 +47,7 @@ const RecipeDetail = () => {
     <div className="recipe-detail">
       <div className="container-head">
         <div className="container-img">
-          <img src={recipe.recipeImage} alt={recipe.title} />
+          <img src={recipe.image} alt={recipe.title} />
         </div>
         <h1>{recipe.title}</h1>
         <p>Servings: {recipe.servings}</p>

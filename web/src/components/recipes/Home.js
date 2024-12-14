@@ -23,7 +23,11 @@ const Home = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading recipes...</p>;
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+      </div>
+    );
   }
   if (error) {
     return <p>{error}</p>;

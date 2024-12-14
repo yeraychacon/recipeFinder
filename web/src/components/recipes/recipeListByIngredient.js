@@ -13,7 +13,11 @@ const RecipeListByIngredient = () => {
         {recipes.length > 0 ? (
           recipes.map((recipe) => (
             <div key={recipe.id}>
-              <RecipeCard recipe={recipe} />
+              <RecipeCard
+                recipe={recipe}
+                id={recipe.id}
+                token={localStorage.getItem("token")}
+              />
             </div>
           ))
         ) : (
