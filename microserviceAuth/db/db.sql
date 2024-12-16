@@ -1,0 +1,27 @@
+
+DROP DATABASE IF EXISTS recipefinder;
+
+CREATE DATABASE recipefinder;
+
+USE recipefinder;
+
+DROP TABLE IF EXISTS user;
+
+
+CREATE TABLE user (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    email VARCHAR(45) NOT NULL,
+    username VARCHAR(45) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    phone VARCHAR(9) NOT NULL
+);
+
+
+DROP TABLE IF EXISTS favoriteRecipes;
+
+
+CREATE TABLE favoriteRoads (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    username VARCHAR(45) NOT NULL,
+    recipeID VARCHAR(45) NOT NULL
+);

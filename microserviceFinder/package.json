@@ -14,15 +14,15 @@
   "author": "Yeray Chacon Cernadas",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.7.7",
+    "axios": "^1.7.9",
     "config": "^3.3.12",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "expres": "^0.0.5",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "microservicefinder": "file:",
     "mongo": "^0.1.0",
-    "mongoose": "^8.8.1",
-    "nodemon": "^3.1.7",
+    "mongoose": "^8.9.0",
+    "nodemon": "^3.1.9",
     "spoonacular": "^2.0.1"
   }
 }
