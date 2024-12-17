@@ -247,25 +247,35 @@ app.get("/finder/getRecipeIngredients", async (req, res) => {
 
 app.get("/finder/getRecipeInformation", async (req, res) => {
   try {
-    const apiKey = process.env.SPOONACULAR_API_KEY;
     const id = req.query.id;
     console.log("ID:", id);
+
+    // Check if the recipe exists in the database
+    const recipe = await getRecipeById(id);
+    if (recipe) {
+      const formattedData = formatRecipeData(recipe);
+      res.json(formattedData);
+      console.log("Recipe obtained from database and formatted successfully");
+      return;
+    }
+
+    // If the recipe does not exist in the database, fetch it from the API
+    const apiKey = process.env.SPOONACULAR_API_KEY;
     const url = `https://api.spoonacular.com/recipes/${id}/information?apiKey=${apiKey}&includeNutrition=false`;
 
     const response = await axios.get(url);
     const data = response.data;
     console.log(response.data);
 
-    saveRecipe(response.data);
+    // Save the new recipe to the database
+    await saveRecipe(response.data);
 
     const formattedData = formatRecipeData(data);
     res.json(formattedData);
-    console.log("Recipe information obtained and formatted successfully");
+    console.log("Recipe information obtained from API and formatted successfully");
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ error: "Failed to obtain and format recipe information" });
+    res.status(500).json({ error: "Failed to obtain and format recipe information" });
   }
 });
 

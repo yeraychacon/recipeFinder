@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import "../../styles/Header.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Para manejar el estado del menú lateral
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado del menú lateral
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Estado del desplegable de Meal Planer
 
   const handleLogout = () => {
     console.log("Logging Out...");
-    navigate("/"); // Redirige al login o donde prefieras
+    navigate("/"); // Redirige al login
   };
 
   const handleSearch = (e) => {
@@ -41,7 +41,7 @@ const Header = () => {
         <img src="../../styles/images/logo.png" alt="logo" className="logo" />
       </div>
 
-      {/* Icono de menú (3 puntitos) para pantallas pequeñas */}
+      {/* Icono de menú (pantallas pequeñas) */}
       <div
         className="hamburger-menu"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -51,45 +51,52 @@ const Header = () => {
         <div className="hamburger-line"></div>
       </div>
 
-      {/* Menú lateral (visible cuando isMenuOpen es true) */}
+      {/* Menú lateral */}
       {isMenuOpen && (
         <div className="sidebar-menu">
           <button className="close-button" onClick={() => setIsMenuOpen(false)}>
             X
           </button>
 
-          <div className="sidebar-search">
-            <form className="header-search" onSubmit={handleSearch}>
-              <input
-                type="text"
-                name="search"
-                placeholder="Search recipes by ingredients"
-                className="search-input"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <button type="submit" className="search-button">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="20"
-                  height="20"
-                  fill="black"
-                >
-                  <path d="M15.9 14.32h-.79l-.28-.27a6.4 6.4 0 0 0 1.48-5.26 6.5 6.5 0 1 0-5.26 5.26l.27.28v.79l4.9 4.88 1.48-1.48zm-5.4 0A4.5 4.5 0 1 1 14 9.82a4.49 4.49 0 0 1-3.5 4.5z"></path>
-                </svg>
-              </button>
-            </form>
-          </div>
+          <form className="header-search" onSubmit={handleSearch}>
+            <input
+              type="text"
+              name="search"
+              placeholder="Search recipes by ingredients"
+              className="search-input"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button type="submit" className="search-button">
+              🔍
+            </button>
+          </form>
 
           <nav className="sidebar-nav">
-            <Link
-              to="/meals"
-              className="nav-link"
-              onClick={() => setIsMenuOpen(false)}
+            <div
+              className="dropdown-container"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              Meal Planer
-            </Link>
+              <span className="nav-link">Meal Planer</span>
+              {isDropdownOpen && (
+                <div className="dropdown-menu">
+                  <Link
+                    to="/meals"
+                    className="dropdown-item"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Generate Meal
+                  </Link>
+                  <Link
+                    to="/saved-meals"
+                    className="dropdown-item"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Saved Meals
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link
               to="/favorites"
               className="nav-link"
@@ -97,7 +104,6 @@ const Header = () => {
             >
               Favorites
             </Link>
-
             <button
               onClick={() => {
                 handleLogout();
@@ -122,21 +128,25 @@ const Header = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <button type="submit" className="search-button">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="black"
-            >
-              <path d="M15.9 14.32h-.79l-.28-.27a6.4 6.4 0 0 0 1.48-5.26 6.5 6.5 0 1 0-5.26 5.26l.27.28v.79l4.9 4.88 1.48-1.48zm-5.4 0A4.5 4.5 0 1 1 14 9.82a4.49 4.49 0 0 1-3.5 4.5z"></path>
-            </svg>
-          </button>
+          <button type="submit" className="search-button">🔍</button>
         </form>
-        <Link to="/meals" className="nav-link">
-          Meal Planer
-        </Link>
+        <div
+          className="dropdown-container"
+          onMouseEnter={() => setIsDropdownOpen(true)}
+          onMouseLeave={() => setIsDropdownOpen(false)}
+        >
+          <span className="nav-link">Meal Planer</span>
+          {isDropdownOpen && (
+            <div className="dropdown-menu">
+              <Link to="/meals" className="dropdown-item">
+                Generate Meal
+              </Link>
+              <Link to="/saved-meals" className="dropdown-item">
+                Saved Meals
+              </Link>
+            </div>
+          )}
+        </div>
         <Link to="/favorites" className="nav-link">
           Favorites
         </Link>

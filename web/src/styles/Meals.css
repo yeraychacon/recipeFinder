@@ -1,63 +1,121 @@
-/* MealPlanApp.css */
+/* General styles */
 
-/* Estilo general */
-.meal-plan-app {
-  font-family: Arial, sans-serif;
-  padding: 20px;
+.meals-container {
+  max-width: 1000px; /* Reducir el ancho máximo */
+  margin: 0 auto; /* Centrar horizontalmente */
+  padding: 10px; /* Reducir padding */
+  position: relative;
 }
 
-.options-container {
-  margin-top: 20px;
+h1 {
   text-align: center;
-  border: 1px solid #000000;
+  margin-bottom: 15px;
 }
 
-.meal-options select,
-.meal-options button {
-  padding: 10px;
-  margin: 10px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-/* Estilo para el horario de clases */
-.schedule-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
-}
-
-.days-header {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-
-.day-column {
+h2 {
+  margin: 15px 0;
   text-align: center;
+  font-size: 1.4rem; /* Reducir tamaño de fuente */
+}
+
+h3 {
+  margin: 5px 0;
+  text-transform: capitalize;
+  font-size: 1rem; /* Reducir tamaño de fuente */
+}
+
+label {
   font-weight: bold;
 }
 
-.meal-rows {
-  display: flex;
-  flex-direction: column;
+select {
+  margin: 5px;
+  padding: 5px;
+  font-size: 0.9rem;
 }
 
-.meal-row {
+.generate-meal {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.generate-meal:hover {
+  background-color: #45a049;
+}
+
+/* Save button - top-right */
+.save-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #0056b3;
+}
+
+/* Daily meal plan - horizontal layout */
+.daily-plan {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 10px;
+  align-items: stretch;
+  gap: 10px; /* Reducir el espacio entre tarjetas */
 }
 
-.meal-cell {
-  width: 100px;
+.daily-plan .meal-card {
+  flex: 1;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 10px;
   text-align: center;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem; /* Reducir fuente */
+  transition: transform 0.2s ease;
 }
 
-.meal-cell p {
-  margin: 5px 0;
+.daily-plan .meal-card:hover {
+  transform: scale(1.02);
+}
+
+/* Weekly meal plan - timetable layout */
+.weekly-plan {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px; /* Reducir el espacio entre días */
+  margin-top: 10px;
+}
+
+.weekly-plan .day-container {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 8px; /* Reducir padding */
+  text-align: center;
+  font-size: 0.9rem; /* Reducir fuente */
+  transition: transform 0.2s ease;
+}
+
+.weekly-plan .meal-card {
+  margin-top: 5px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px; /* Reducir padding */
+  font-size: 0.8rem; /* Reducir tamaño de texto */
 }

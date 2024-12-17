@@ -21,6 +21,8 @@
     "puntitos",
     "recetas",
     "Redirige",
-    "SPOONACULAR"
+    "SPOONACULAR",
+    "uvicorn",
+    "venv"
   ]
 }

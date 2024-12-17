@@ -44,7 +44,8 @@
   justify-content: center;
   cursor: pointer;
 }
-W .search-button svg {
+
+.search-button svg {
   width: 16px;
   height: 16px;
   fill: black; /* Lupa en color negro */
@@ -111,7 +112,6 @@ W .search-button svg {
 }
 
 /* Menú lateral */
-
 .sidebar-menu {
   position: absolute;
   top: 0;
@@ -159,6 +159,57 @@ W .search-button svg {
   font-size: 18px;
 }
 
+/* Dropdown container */
+.dropdown-container {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #444;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: none; /* Inicialmente oculto */
+}
+
+.dropdown-container:hover .dropdown-menu {
+  display: block; /* Se muestra al hacer hover */
+}
+
+.dropdown-item {
+  display: block;
+  padding: 10px 15px;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+  background-color: #555;
+}
+
+/* Ajustes para el menú lateral */
+.sidebar-nav .dropdown-container {
+  cursor: pointer;
+}
+
+.sidebar-nav .dropdown-menu {
+  position: static;
+  background-color: #444;
+  margin-top: 5px;
+}
+
+.sidebar-nav .dropdown-item {
+  padding: 8px 10px;
+  color: white;
+}
+
 /* Medios de pantallas pequeñas */
 @media screen and (max-width: 768px) {
   /* En pantallas pequeñas, esconder la navegación normal y mostrar el menú hamburguesa */
@@ -188,5 +239,21 @@ W .search-button svg {
     padding: 8px 15px;
     min-width: 120px;
     align-self: center;
+  }
+
+  .dropdown-container {
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    position: static;
+    margin-top: 50px;
+    width: 100%;
+  }
+
+  .dropdown-item {
+    padding: 10px;
+    font-size: 16px;
   }
 }
