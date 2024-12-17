@@ -1,118 +1,99 @@
+// Importamos React y hooks necesarios
 import React, { useState } from "react";
-import "../../styles/Meals.css"; // Importamos los estilos desde un archivo CSS separado
+import axios from "axios";
+import RecipeCard from "./RecipeCard";
 
-// Simulación de una API que devuelven comidas
-const getMealsForDay = (day) => {
-  const meals = [
-    { id: 1, title: "Blueberry Pancakes", readyInMinutes: 30, servings: 2 },
-    { id: 2, title: "Spaghetti Carbonara", readyInMinutes: 20, servings: 4 },
-    { id: 3, title: "Vegetable Stir Fry", readyInMinutes: 25, servings: 3 },
-  ];
-  return meals;
-};
+const Meals = () => {
+  const [timeFrame, setTimeFrame] = useState("day"); // Estado para seleccionar diario o semanal
+  const [mealPlan, setMealPlan] = useState(null); // Estado para almacenar el meal plan
 
-const getMealsForWeek = () => {
-  const weekMeals = {
-    monday: getMealsForDay("Monday"),
-    tuesday: getMealsForDay("Tuesday"),
-    wednesday: getMealsForDay("Wednesday"),
-    thursday: getMealsForDay("Thursday"),
-    friday: getMealsForDay("Friday"),
-    saturday: getMealsForDay("Saturday"),
-    sunday: getMealsForDay("Sunday"),
-  };
-  return weekMeals;
-};
-
-const MealPlanApp = () => {
-  const [mealType, setMealType] = useState("day"); // 'day' o 'week'
-  const [mealPlan, setMealPlan] = useState(null); // Para almacenar el plan de comidas generado
-  const [isOptionsVisible, setIsOptionsVisible] = useState(true); // Para controlar si las opciones están visibles
-
-  // Función para generar el meal plan según el tipo seleccionado
-  const generateMealPlan = () => {
-    setIsOptionsVisible(false); // Ocultamos las opciones una vez generado el plan
-
-    if (mealType === "day") {
-      const meals = getMealsForDay("day");
-      setMealPlan({ type: "day", meals });
-    } else if (mealType === "week") {
-      const meals = getMealsForWeek();
-      setMealPlan({ type: "week", meals });
-    }
-  };
-
-  // Renderiza el meal plan como horario de clases
-  const renderMealsAsSchedule = () => {
-    if (mealPlan && mealPlan.type === "week") {
-      const daysOfWeek = [
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday",
-        "saturday",
-        "sunday",
-      ];
-
-      return (
-        <div className="schedule-container">
-          <div className="days-header">
-            {daysOfWeek.map((day, index) => (
-              <div key={index} className="day-column">
-                <h3>{day.charAt(0).toUpperCase() + day.slice(1)}</h3>
-              </div>
-            ))}
-          </div>
-          <div className="meal-rows">
-            {Array.from({ length: 3 }).map((_, rowIndex) => (
-              <div className="meal-row" key={rowIndex}>
-                {daysOfWeek.map((day, index) => (
-                  <div key={index} className="meal-cell">
-                    <p>
-                      <strong>{mealPlan.meals[day][rowIndex].title}</strong>
-                    </p>
-                    <p>
-                      Ready in: {mealPlan.meals[day][rowIndex].readyInMinutes}{" "}
-                      min
-                    </p>
-                    <p>Servings: {mealPlan.meals[day][rowIndex].servings}</p>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
+  // Función para generar el meal plan
+  const generateMealPlan = async () => {
+    try {
+      const response = await axios.get(
+        `/api/finder/generateMealPlan?timeFrame=${timeFrame}`
       );
+      setMealPlan(response.data); // Guardar los datos del meal plan
+      console.log("Meal plan generated:", response.data);
+    } catch (error) {
+      console.error("Error fetching meal plan:", error);
     }
   };
+  const getRecipeById = async (id) => {
+    try {
+      console.log("Fetching recipe by ID:", id);
+      const response = await axios.get(
+        `/api/finder/getRecipeInformation?id=${id}`
+      );
+      console.log("Recipe by ID:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching recipe by ID:", error);
+    }
+  };
+
+  // Renderizado condicional para meal plan diario
+  const renderDailyPlan = () => (
+    <div>
+      <h2>Daily Meal Plan</h2>
+      {mealPlan.meals.map(async (meal) => (
+        <div key={meal.id}>
+          <RecipeCard
+            recipe={getRecipeById(meal.id)}
+            id={meal.id}
+            token={localStorage.getItem("token")}
+          />
+        </div>
+      ))}
+    </div>
+  );
+
+  // Renderizado condicional para meal plan semanal
+  const renderWeeklyPlan = () => (
+    <div>
+      <h2>Weekly Meal Plan</h2>
+      {Object.keys(mealPlan.week).map((day) => (
+        <div key={day}>
+          <h3>{day.charAt(0).toUpperCase() + day.slice(1)}</h3>
+          {mealPlan.week[day].meals.map(async (meal) => (
+            <div key={meal.id}>
+              <RecipeCard
+                recipe={getRecipeById(meal.id)}
+                id={meal.id}
+                token={localStorage.getItem("token")}
+              />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="meal-plan-app">
-      <h1>Meal Planer</h1>
-      <div className="options-container">
-        {isOptionsVisible ? (
-          <div className="meal-options">
-            <select
-              value={mealType}
-              onChange={(e) => setMealType(e.target.value)}
-            >
-              <option value="day">Day</option>
-              <option value="week">Week</option>
-            </select>
-            <button onClick={generateMealPlan}>Generate Plan</button>
-          </div>
-        ) : (
-          <div className="meal-plan-content">
-            <h2>
-              {mealPlan.type === "day" ? "Daily Meal Plan" : "Weekly Meal Plan"}
-            </h2>
-            {mealPlan.type === "week" && renderMealsAsSchedule()}
-          </div>
-        )}
-      </div>
+    <div>
+      <h1>Meal Plan Finder</h1>
+
+      {/* Selector para elegir tipo de plan */}
+      <label htmlFor="timeFrame">Select Time Frame: </label>
+      <select
+        id="timeFrame"
+        value={timeFrame}
+        onChange={(e) => setTimeFrame(e.target.value)}
+      >
+        <option value="day">Daily</option>
+        <option value="week">Weekly</option>
+      </select>
+
+      {/* Botón para generar el meal plan */}
+      <button onClick={generateMealPlan}>Generate Meal Plan</button>
+
+      {/* Renderizado condicional según el tipo de plan */}
+      {mealPlan &&
+        (timeFrame === "day" ? renderDailyPlan() : renderWeeklyPlan())}
+
+      {/* Mostrar favoritos */}
     </div>
   );
 };
 
-export default MealPlanApp;
+export default Meals;

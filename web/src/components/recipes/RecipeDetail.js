@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import IngredientCard from "./ingredientCard";
+
 import { useParams } from "react-router-dom";
 import DOMPurify from "dompurify";
 import "../../styles/RecipeDetail.css";
