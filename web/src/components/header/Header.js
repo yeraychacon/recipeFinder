@@ -24,7 +24,7 @@ const Header = () => {
     console.log("Buscando recetas con:", query);
 
     axios
-      .get(`api/finder/getRecipesByIngredients?ingredients=${query}`)
+      .get(`http://localhost:3000/api/finder/getRecipesByIngredients?ingredients=${query}`)
       .then((response) => {
         console.log(response.data);
         navigate("/recipes", { state: { recipes: response.data } });

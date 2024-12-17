@@ -30,7 +30,7 @@ Make sure you have the following installed:
 
 1. Create a `.env` file in the root directory and add the necessary environment variables. For `client_id` and `client_secret`, you need to use the keys obtained from the Google Developer Console:
    ```plaintext
-   CLIENT_ID = "your_client_id"
+   GOOGLE_CLIENT_ID = "your_client_id"
    CLIENT_SECRET = "your_client_secret"
    SECRET_KEY = "your_secret_key"
    ```

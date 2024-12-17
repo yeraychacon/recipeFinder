@@ -20,8 +20,8 @@ CREATE TABLE user (
 DROP TABLE IF EXISTS favoriteRecipes;
 
 
-CREATE TABLE favoriteRoads (
+CREATE TABLE favoriteRecipes (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     username VARCHAR(45) NOT NULL,
-    recipeID VARCHAR(45) NOT NULL
+    idRecipe VARCHAR(45) NOT NULL
 );
