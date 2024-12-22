@@ -4,7 +4,7 @@ services:
       context: ./web # Carpeta del frontend
       dockerfile: dockerfile.yml
     ports:
-      - "3000:80"
+      - "3000:3000"
     depends_on:
       - gateway
     networks:
@@ -12,7 +12,7 @@ services:
 
   microservicio_finder:
     build:
-      context: ./microserviceFinder 
+      context: ./microserviceFinder
       dockerfile: dockerfile.yml
     ports:
       - "4000:4000"
@@ -46,7 +46,7 @@ services:
   gateway:
     build:
       context: ./gateway # Carpeta de gateway
-      dockerfile: dockerfile.yml 
+      dockerfile: dockerfile.yml
     ports:
       - "5000:5000"
     depends_on:

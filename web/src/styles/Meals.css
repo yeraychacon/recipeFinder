@@ -1,9 +1,9 @@
 /* General styles */
 
 .meals-container {
-  max-width: 1000px; /* Reducir el ancho máximo */
-  margin: 0 auto; /* Centrar horizontalmente */
-  padding: 10px; /* Reducir padding */
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 10px;
   position: relative;
 }
 
@@ -15,13 +15,13 @@ h1 {
 h2 {
   margin: 15px 0;
   text-align: center;
-  font-size: 1.4rem; /* Reducir tamaño de fuente */
+  font-size: 1.4rem;
 }
 
 h3 {
   margin: 5px 0;
   text-transform: capitalize;
-  font-size: 1rem; /* Reducir tamaño de fuente */
+  font-size: 1rem;
 }
 
 label {
@@ -34,34 +34,36 @@ select {
   font-size: 0.9rem;
 }
 
-.generate-meal {
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.generate-meal,
+.save-button {
   padding: 6px 12px;
   font-size: 0.9rem;
-  background-color: #4caf50;
-  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+.generate-meal {
+  background-color: #4caf50;
+  color: white;
 }
 
 .generate-meal:hover {
   background-color: #45a049;
 }
 
-/* Save button - top-right */
 .save-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
   background-color: #007bff;
   color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .save-button:hover {
@@ -71,32 +73,34 @@ select {
 /* Daily meal plan - horizontal layout */
 .daily-plan {
   display: flex;
-  justify-content: space-around;
-  align-items: stretch;
-  gap: 10px; /* Reducir el espacio entre tarjetas */
+  justify-content: center; /* Centra los elementos horizontalmente */
+  align-items: center; /* Centra los elementos verticalmente */
+  gap: 20px; /* Espacio entre las tarjetas */
 }
 
 .daily-plan .meal-card {
-  flex: 1;
+  flex: 0 0 auto; /* No estira las tarjetas */
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  padding: 15px; /* Espacio interno */
+  width: calc(
+    100% / 3 - 40px
+  ); /* Ajusta el ancho según el espacio disponible */
+  max-width: 320px; /* Ancho máximo para mantener un diseño consistente */
   text-align: center;
-  font-size: 0.9rem; /* Reducir fuente */
-  transition: transform 0.2s ease;
-}
-
-.daily-plan .meal-card:hover {
-  transform: scale(1.02);
+  font-size: 0.9rem;
 }
 
 /* Weekly meal plan - timetable layout */
 .weekly-plan {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px; /* Reducir el espacio entre días */
+  grid-template-columns: repeat(
+    7,
+    1fr
+  ); /* 7 columnas para pantallas completas */
+  gap: 10px;
   margin-top: 10px;
 }
 
@@ -105,17 +109,95 @@ select {
   border: 1px solid #ddd;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 8px; /* Reducir padding */
+  padding: 8px;
   text-align: center;
-  font-size: 0.9rem; /* Reducir fuente */
-  transition: transform 0.2s ease;
+  font-size: 0.9rem;
 }
 
 .weekly-plan .meal-card {
   margin-top: 5px;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
   border-radius: 5px;
-  padding: 5px; /* Reducir padding */
-  font-size: 0.8rem; /* Reducir tamaño de texto */
+  padding: 5px;
+  font-size: 0.8rem;
+}
+
+/* Responsiveness with media queries */
+
+/* Tablets (1024px o menos) */
+@media (max-width: 1024px) {
+  .daily-plan {
+    flex-wrap: wrap; /* Permite que las tarjetas se ajusten a nuevas filas */
+    gap: 15px; /* Reduce espacio entre tarjetas */
+  }
+
+  .daily-plan .meal-card {
+    width: calc(50% - 20px); /* Dos tarjetas por fila */
+    max-width: 280px; /* Ajusta el tamaño máximo */
+  }
+
+  .weekly-plan {
+    grid-template-columns: repeat(3, 1fr); /* 4 columnas para tablets grandes */
+  }
+}
+
+/* Small tablets (768px o menos) */
+@media (max-width: 768px) {
+  .daily-plan .meal-card {
+    width: 100%; /* Una tarjeta por fila */
+    max-width: 300px; /* Ajusta el tamaño máximo */
+  }
+
+  .weekly-plan {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* 2 columnas para tablets pequeñas */
+  }
+
+  .weekly-plan .day-container {
+    font-size: 0.85rem;
+  }
+}
+
+/* Mobile phones (480px o menos) */
+@media (max-width: 480px) {
+  .daily-plan {
+    flex-direction: column; /* Apila las tarjetas verticalmente */
+    gap: 10px;
+  }
+
+  .daily-plan .meal-card {
+    width: 100%; /* Ocupa todo el ancho */
+  }
+
+  .weekly-plan {
+    grid-template-columns: repeat(1, 1fr); /* 1 columna para móviles */
+    gap: 5px;
+  }
+
+  .weekly-plan .day-container {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+
+  .weekly-plan .meal-card {
+    font-size: 0.75rem;
+    padding: 4px;
+  }
+
+  .buttons-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  h2,
+  h3 {
+    font-size: 1rem;
+  }
+
+  .generate-meal,
+  .save-button {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
 }

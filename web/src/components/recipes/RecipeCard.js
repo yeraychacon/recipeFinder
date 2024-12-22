@@ -29,6 +29,7 @@ const RecipeCard = ({ recipe, token }) => {
         );
         console.log("Respuesta de check favoritos:", response.data);
         setIsFavorite(response.data.isFavorite);
+        console.log(recipe.readyInMinutes);
       } catch (error) {
         console.error("Error verificando favoritos:", error.response || error);
       }

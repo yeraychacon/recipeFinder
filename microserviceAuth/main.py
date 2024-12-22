@@ -123,6 +123,20 @@ class FavoriteRecipe(BaseModel):
     recipeId: str
     
 
+
+    
+@app.delete("/auth/favRecipe/delete")
+async def delete_fav_recipe(recipe: DeleteFavoriteRecipe, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+
+    query = "DELETE FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
+    cursor.execute(query, (user, recipe.recipe))  # Usar recipe.recipe
+    db.commit()
+
+    cursor.close()
+    return {"message": "Receta eliminada de favoritos"}
+
+
 @app.post("/auth/favRecipe/add")
 async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
@@ -143,20 +157,6 @@ async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurre
 
     cursor.close()
     return {"message": "Receta añadida a favoritos"}
-
-    
-@app.delete("/auth/favRecipe/delete")
-async def delete_fav_recipe(recipe: DeleteFavoriteRecipe, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-
-    query = "DELETE FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
-    cursor.execute(query, (user, recipe.recipe))  # Usar recipe.recipe
-    db.commit()
-
-    cursor.close()
-    return {"message": "Receta eliminada de favoritos"}
-
-
 
 @app.post("/auth/favRecipe/check")
 async def check_fav_recipe(recipe: FavoriteRecipe, user: str = Depends(getCurrentUser)):
@@ -180,6 +180,67 @@ async def list_fav_recipe(user: str = Depends(getCurrentUser)):
     
     cursor.close()
     return fav_recipes
+
+class addMeal(BaseModel):
+    recipe: str
+    
+class deleteMeal(BaseModel):
+    recipe: str
+    
+class Meal(BaseModel):
+    recipe: str
+    
+@app.get("/auth/SavedMeals/add")
+async def add_saved_meal(meal: addMeal, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+    
+    query = "SELECT * FROM savedMeals WHERE username=%s AND idRecipe=%s"
+    cursor.execute(query, (user, meal.recipe))
+    existing_meal = cursor.fetchone()
+    
+    if existing_meal:
+        cursor.close()
+        raise HTTPException(status_code=400, detail="Meal is already saved")
+    
+    insert_query = "INSERT INTO savedMeals(username, idRecipe) VALUES (%s, %s)"
+    cursor.execute(insert_query, (user, meal.recipe))
+    db.commit()
+    
+    cursor.close()
+    return {"message": "Meal saved successfully"}
+
+@app.get("/auth/SavedMeals/delete")
+async def delete_saved_meal(meal: deleteMeal, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+    
+    query = "DELETE FROM savedMeals WHERE username=%s AND idRecipe=%s"
+    cursor.execute(query, (user, meal.recipe))
+    db.commit()
+    
+    cursor.close()
+    return {"message": "Meal deleted successfully"}
+
+@app.get("/auth/SavedMeals/check")
+async def check_saved_meal(meal: Meal, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+    
+    query = "SELECT * FROM savedMeals WHERE username=%s AND idRecipe=%s"
+    cursor.execute(query, (user, meal.recipe))
+    existing_meal = cursor.fetchone()
+    
+    cursor.close()
+    return {"isSaved": existing_meal is not None}
+
+@app.get("/auth/SavedMeals/list")
+async def list_saved_meals(user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+    
+    query = "SELECT idRecipe FROM savedMeals WHERE username=%s"
+    cursor.execute(query, (user,))
+    saved_meals = cursor.fetchall()
+    
+    cursor.close()
+    return saved_meals
 
 @app.post("/auth/google")
 async def google_login(user: dict):

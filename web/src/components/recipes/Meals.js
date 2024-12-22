@@ -7,7 +7,8 @@ const Meals = () => {
   const [timeFrame, setTimeFrame] = useState("day"); // Estado para seleccionar diario o semanal
   const [mealPlan, setMealPlan] = useState(null); // Estado para almacenar el meal plan
   const [recipes, setRecipes] = useState({}); // Estado para almacenar recetas individuales
-
+  const [isFavorite, setIsFavorite] = useState(false); // Estado para verificar si es favorito
+  const token = localStorage.getItem("token");
   // Función para generar el meal plan
   const generateMealPlan = async () => {
     try {
@@ -18,6 +19,7 @@ const Meals = () => {
       console.log("Meal plan generated:", response.data);
 
       // Obtener recetas para cada meal del plan
+      setMealPlan(response.data);
       const newRecipes = {};
       if (timeFrame === "day") {
         await Promise.all(
@@ -43,6 +45,39 @@ const Meals = () => {
     }
   };
 
+  const toggleSave = async (event) => {
+    event.stopPropagation(); 
+    console.log(`Alternando favorito para la receta: ${mealPlan.id}`);
+    
+    try {
+      if (isFavorite) {
+        // Eliminar de favoritos
+        const response = await axios.delete("/api/auth/SavedMeals/delete", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { mealPlan: mealPlan.id.toString() }, // Usa la clave `recipe` según tu backend
+        });
+        console.log("Receta eliminada de favoritos:", response.data);
+      } else {
+        // Añadir a favoritos
+        const response = await axios.post(
+          "/api/auth/SavedMeals/add",
+          { mealPlan: mealPlan.id.toString() }, // Usa la clave `recipe` según tu backend
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Receta añadida a favoritos:", response.data);
+      }
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error("Error alternando favoritos:", error.response || error);
+    }
+  }
+
   // Función para obtener una receta por ID
   const getRecipeById = async (id) => {
     try {
@@ -50,6 +85,7 @@ const Meals = () => {
       const response = await axios.get(
         `/api/finder/getRecipeInformation?id=${id}`
       );
+
       return response.data;
     } catch (error) {
       console.error("Error fetching recipe by ID:", error);
@@ -108,12 +144,6 @@ const Meals = () => {
 
   return (
     <div className="meals-container">
-      <button
-        className="save-button"
-        onClick={() => console.log("Meals saved!")}
-      >
-        Save Meals
-      </button>
       <h1>Meal Plan Finder</h1>
 
       {/* Selector para elegir tipo de plan */}
@@ -127,8 +157,18 @@ const Meals = () => {
         <option value="week">Weekly</option>
       </select>
 
-      {/* Botón para generar el meal plan */}
-      <button onClick={generateMealPlan} className="generate-meal">Generate Meal Plan</button>
+      {/* Contenedor para botones */}
+      <div className="buttons-container">
+        <button onClick={generateMealPlan} className="generate-meal">
+          Generate Meal Plan
+        </button>
+        <button
+          className="save-button"
+          onClick={toggleSave}
+        >
+          Save Meals
+        </button>
+      </div>
 
       {/* Renderizado condicional según el tipo de plan */}
       {mealPlan &&
