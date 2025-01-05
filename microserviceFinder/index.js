@@ -75,25 +75,10 @@ async function saveRecipe(recipe) {
 
 const saveMealPlan = async (data) => {
   try {
-    let id;
-    let isUnique = false;
-
-    // Validar si el 'planId' ya está presente y es válido
-    while (!isUnique) {
-      id = Math.floor(10000 + Math.random() * 90000);
-      const existingPlan = await MealPlan.findOne({ id: id });
-      if (!existingPlan) {
-        isUnique = true;
-      }
-    }
-    console.log("Generated plan ID:", id);
-
-    if (!id) {
-      throw new Error("Invalid plan ID");
-    }
+    
 
     const mealPlan = new MealPlan({
-      id: id, // Unique 5-digit ID
+      id: data.id, // Unique 5-digit ID
       type: data.type, // 'daily' or 'weekly'
       meals:
         data.type === "daily"
@@ -309,11 +294,27 @@ app.get("/finder/generateMealPlan", async (req, res) => {
     const apiKey = process.env.SPOONACULAR_API_KEY;
     const timeFrame = req.query.timeFrame || "day";
     const url = `https://api.spoonacular.com/mealplanner/generate?apiKey=${apiKey}&timeFrame=${timeFrame}`;
+    let id;
+    let isUnique = false;
 
     const response = await axios.get(url);
     const data = response.data;
 
+    while (!isUnique) {
+      id = Math.floor(10000 + Math.random() * 90000);
+      const existingPlan = await MealPlan.findOne({ id: id });
+      if (!existingPlan) {
+        isUnique = true;
+      }
+    }
+    console.log("Generated plan ID:", id);
+
+    if (!id) {
+      throw new Error("Invalid plan ID");
+    }
+
     const formattedData = {
+      id: id,
       type: timeFrame === "day" ? "daily" : "weekly",
       meals: timeFrame === "day" ? data.meals : [],
       week: timeFrame === "week" ? data.week : {},

@@ -122,9 +122,27 @@ class DeleteFavoriteRecipe(BaseModel):
 class FavoriteRecipe(BaseModel):
     recipeId: str
     
+@app.post("/auth/favRecipe/add")
+async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
 
+    # Verifica si ya existe la receta en favoritos
+    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idMeal=%s"
+    cursor.execute(query, (user, recipe.recipe))
+    existing_favorite = cursor.fetchone()
 
-    
+    if existing_favorite:
+        cursor.close()
+        raise HTTPException(status_code=400, detail="Receta ya añadida a favoritos")
+
+    # Inserta la receta si no existe
+    insert_query = "INSERT INTO favoriterecipes(username, idMeal) VALUES (%s, %s)"
+    cursor.execute(insert_query, (user, recipe.recipe))
+    db.commit()
+
+    cursor.close()
+    return {"message": "Receta añadida a favoritos"}
+  
 @app.delete("/auth/favRecipe/delete")
 async def delete_fav_recipe(recipe: DeleteFavoriteRecipe, user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
@@ -137,26 +155,6 @@ async def delete_fav_recipe(recipe: DeleteFavoriteRecipe, user: str = Depends(ge
     return {"message": "Receta eliminada de favoritos"}
 
 
-@app.post("/auth/favRecipe/add")
-async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-
-    # Verifica si ya existe la receta en favoritos
-    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
-    cursor.execute(query, (user, recipe.recipe))
-    existing_favorite = cursor.fetchone()
-
-    if existing_favorite:
-        cursor.close()
-        raise HTTPException(status_code=400, detail="Receta ya añadida a favoritos")
-
-    # Inserta la receta si no existe
-    insert_query = "INSERT INTO favoriterecipes(username, idRecipe) VALUES (%s, %s)"
-    cursor.execute(insert_query, (user, recipe.recipe))
-    db.commit()
-
-    cursor.close()
-    return {"message": "Receta añadida a favoritos"}
 
 @app.post("/auth/favRecipe/check")
 async def check_fav_recipe(recipe: FavoriteRecipe, user: str = Depends(getCurrentUser)):
@@ -182,28 +180,28 @@ async def list_fav_recipe(user: str = Depends(getCurrentUser)):
     return fav_recipes
 
 class addMeal(BaseModel):
-    recipe: str
+    meal: str
     
 class deleteMeal(BaseModel):
-    recipe: str
+    meal: str
     
-class Meal(BaseModel):
-    recipe: str
+class SavedMeal(BaseModel):
+    mealId: str
     
-@app.get("/auth/SavedMeals/add")
+@app.post("/auth/SavedMeals/add")
 async def add_saved_meal(meal: addMeal, user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
     
-    query = "SELECT * FROM savedMeals WHERE username=%s AND idRecipe=%s"
-    cursor.execute(query, (user, meal.recipe))
+    query = "SELECT * FROM savedMeals WHERE username=%s AND idMeal=%s"
+    cursor.execute(query, (user, meal.meal))
     existing_meal = cursor.fetchone()
     
     if existing_meal:
         cursor.close()
         raise HTTPException(status_code=400, detail="Meal is already saved")
     
-    insert_query = "INSERT INTO savedMeals(username, idRecipe) VALUES (%s, %s)"
-    cursor.execute(insert_query, (user, meal.recipe))
+    insert_query = "INSERT INTO savedMeals(username, idMeal) VALUES (%s, %s)"
+    cursor.execute(insert_query, (user, meal.meal))
     db.commit()
     
     cursor.close()
@@ -213,19 +211,19 @@ async def add_saved_meal(meal: addMeal, user: str = Depends(getCurrentUser)):
 async def delete_saved_meal(meal: deleteMeal, user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
     
-    query = "DELETE FROM savedMeals WHERE username=%s AND idRecipe=%s"
-    cursor.execute(query, (user, meal.recipe))
+    query = "DELETE FROM savedMeals WHERE username=%s AND idMeal=%s"
+    cursor.execute(query, (user, meal.meal))
     db.commit()
     
     cursor.close()
     return {"message": "Meal deleted successfully"}
 
 @app.get("/auth/SavedMeals/check")
-async def check_saved_meal(meal: Meal, user: str = Depends(getCurrentUser)):
+async def check_saved_meal(meal: SavedMeal, user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
     
     query = "SELECT * FROM savedMeals WHERE username=%s AND idRecipe=%s"
-    cursor.execute(query, (user, meal.recipe))
+    cursor.execute(query, (user, meal.mealId))
     existing_meal = cursor.fetchone()
     
     cursor.close()

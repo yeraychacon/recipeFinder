@@ -61,9 +61,10 @@ const Meals = () => {
         console.log("Receta eliminada de favoritos:", response.data);
       } else {
         // Añadir a favoritos
+        console.log("Añadiendo receta a favoritos:", mealPlan.id);
         const response = await axios.post(
           "/api/auth/SavedMeals/add",
-          { mealPlan: mealPlan.id.toString() }, // Usa la clave `recipe` según tu backend
+          { meal: mealPlan.id.toString() }, // Usa la clave `recipe` según tu backend
           {
             headers: {
               Authorization: `Bearer ${token}`,
