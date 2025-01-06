@@ -56,7 +56,7 @@ const Meals = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          data: { mealPlan: mealPlan.id.toString() }, // Usa la clave `recipe` según tu backend
+          data: { mealPlan: mealPlan.id.toString() }, 
         });
         console.log("Receta eliminada de favoritos:", response.data);
       } else {
@@ -64,7 +64,7 @@ const Meals = () => {
         console.log("Añadiendo receta a favoritos:", mealPlan.id);
         const response = await axios.post(
           "/api/auth/SavedMeals/add",
-          { meal: mealPlan.id.toString() }, // Usa la clave `recipe` según tu backend
+          { meal: mealPlan.id.toString() }, 
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ const Meals = () => {
     }
   }
 
-  // Función para obtener una receta por ID
+  
   const getRecipeById = async (id) => {
     try {
       console.log("Fetching recipe by ID:", id);
@@ -94,7 +94,6 @@ const Meals = () => {
     }
   };
 
-  // Renderizado para meal plan diario
   const renderDailyPlan = () => (
     <div>
       <h2>Daily Meal Plan</h2>

@@ -118,6 +118,22 @@ async function getAllRecipes() {
   }
 }
 
+app.get("/finder/getMealById", async (req, res) => {
+  try {
+    const id = req.query.id;
+    const mealPlan = await MealPlan.findOne({ id: id });
+    if (mealPlan) {
+      res.json(mealPlan);
+      console.log("Meal plan obtained by id successfully");
+    } else {
+      res.status(404).json({ error: "Meal plan not found" });
+    }
+  } catch (error) {
+    console.error("Error obtaining meal plan by id:", error.message);
+    res.status(500).json({ error: "Failed to obtain meal plan by id" });
+  }
+});
+
 async function getRecipeById(id) {
   try {
     const recipe = await Recipe.findOne({ id: id });

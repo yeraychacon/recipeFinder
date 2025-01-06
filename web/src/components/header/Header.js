@@ -88,7 +88,7 @@ const Header = () => {
                     Generate Meal
                   </Link>
                   <Link
-                    to="/saved-meals"
+                    to="/savedMeals"
                     className="dropdown-item"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -141,7 +141,7 @@ const Header = () => {
               <Link to="/meals" className="dropdown-item">
                 Generate Meal
               </Link>
-              <Link to="/saved-meals" className="dropdown-item">
+              <Link to="/savedMeals" className="dropdown-item">
                 Saved Meals
               </Link>
             </div>

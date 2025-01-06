@@ -20,7 +20,7 @@ const RecipeCard = ({ recipe, token }) => {
         console.log("Verificando si la receta es favorita:", recipe.id);
         const response = await axios.post(
           "/api/auth/favRecipe/check",
-          { recipeId: recipe.id.toString() }, // Asegúrate de usar recipeId según tu backend
+          { recipeId: recipe.id.toString() }, 
           {
             headers: {
               Authorization: `Bearer ${token}`,

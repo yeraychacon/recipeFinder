@@ -16,6 +16,7 @@ import RecipeDetail from "./components/recipes/RecipeDetail.js";
 import FavoritesList from "./components/recipes/FavoritesList.js";
 import RecipeListByIngredient from "./components/recipes/recipeListByIngredient.js";
 import Meals from "./components/recipes/Meals.js";
+import SavedMeals from "./components/recipes/SavedMeals.js";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -44,6 +45,7 @@ function App() {
           <Route path="/favorites" element={<FavoritesList />} />
           <Route path="/recipes" element={<RecipeListByIngredient />} />
           <Route path="/meals" element={<Meals />} />
+          <Route path="/savedMeals" element={<SavedMeals />} />
         </Routes>
       </div>
     </Router>

@@ -222,7 +222,7 @@ async def delete_saved_meal(meal: deleteMeal, user: str = Depends(getCurrentUser
 async def check_saved_meal(meal: SavedMeal, user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
     
-    query = "SELECT * FROM savedMeals WHERE username=%s AND idRecipe=%s"
+    query = "SELECT * FROM savedMeals WHERE username=%s AND idMeal=%s"
     cursor.execute(query, (user, meal.mealId))
     existing_meal = cursor.fetchone()
     
@@ -233,12 +233,13 @@ async def check_saved_meal(meal: SavedMeal, user: str = Depends(getCurrentUser))
 async def list_saved_meals(user: str = Depends(getCurrentUser)):
     cursor = db.cursor()
     
-    query = "SELECT idRecipe FROM savedMeals WHERE username=%s"
+    query = "SELECT idMeal FROM savedMeals WHERE username=%s"
     cursor.execute(query, (user,))
     saved_meals = cursor.fetchall()
     
     cursor.close()
     return saved_meals
+
 
 @app.post("/auth/google")
 async def google_login(user: dict):
