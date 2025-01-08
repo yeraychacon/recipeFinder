@@ -104,6 +104,10 @@ async def register(user: User):
     cursor.close()
     return {"message": "Usuario registrado con éxito"}
 
+@app.post("/auth/logout")
+async def logout(user: str = Depends(oauth2_scheme)):
+    return {"message": "Logout successful"}
+
 async def getCurrentUser(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])

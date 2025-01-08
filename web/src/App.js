@@ -29,6 +29,21 @@ function App() {
     console.log("isAuthenticated:", isAuthenticated);
   }, [isAuthenticated]);
 
+  const logout = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      await axios.post("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
+    localStorage.removeItem("token");
+
+    window.location.href = "/";
+  }
+};
+
   return (
     <Router>
       <div className="App">
