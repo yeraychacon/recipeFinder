@@ -50,7 +50,7 @@ Make sure you have the following installed:
    SECRET_KEY = "your_secret_key"
    ```
 
-### Running the Service
+#### Running the Service
 
 1. Start the service:
 
@@ -59,6 +59,10 @@ Make sure you have the following installed:
    ```
 
 2. The service should now be running on `http://localhost:8000`.
+
+#### API Documentation
+
+To access the API documentation, go to `http://localhost:8000/docs`.
 
 ### 2. RECIPE FINDER MICROSERVICE
 
@@ -81,6 +85,10 @@ To do this, run the following command:
 To run the project, simply execute the following command:
 
     npm start
+
+#### API Documentation
+
+To access the API documentation, navigate to `http://localhost:4000/api-docs` in your web browser. This endpoint provides access to the API documentation.
 
 ## GATEWAY
 

@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 import "./styles/App.css";
-import axios from "axios";
+
 
 import Register from "./components/login/Register.js";
 import Login from "./components/login/Login.js";
@@ -33,19 +33,22 @@ function App() {
     const token = localStorage.getItem("token");
     if (token) {
       console.log("token:", token);
-      const response = await axios.post("http://localhost:8000/auth/logout", {
+      
+      const response = await fetch("http://localhost:8000/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-      },
-    });
-
+          Authorization: `${token}`,
+        },
+      });
+      
+ /*
     if (!response.ok) {
       const errorData = await response.json();
       console.error("Logout error:", errorData);
       return;
-  }
+    }
+      */
     localStorage.removeItem("token");
 
     setIsAuthenticated(false);

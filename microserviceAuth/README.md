@@ -44,3 +44,7 @@ Make sure you have the following installed:
    ```
 
 2. The service should now be running on `http://localhost:8000`.
+
+### API Documentation
+
+To access the API documentation, go to `http://localhost:8000/docs`.

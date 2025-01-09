@@ -23,6 +23,8 @@
     "mongo": "^0.1.0",
     "mongoose": "^8.9.1",
     "nodemon": "^3.1.9",
-    "spoonacular": "^2.0.1"
+    "spoonacular": "^2.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }

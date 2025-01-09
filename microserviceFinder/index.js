@@ -5,6 +5,8 @@ const port = 4000;
 const axios = require("axios");
 const connectDB = require("./config/db");
 const mongoose = require("mongoose");
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 connectDB();
 
@@ -70,22 +72,45 @@ async function getRecipeById(id) {
 /**
  * @swagger
  * /finder/getRecipeById:
- * get:
- *  description: Fetches a recipe by ID from the database, if not found fetches from Spoonacular API
- *  responses:
- *    200:
- *      description: All recipe obtained successfully
- *      content:
- *        application/json:
- *      schema:
- *        type: array
- *        items:
- *        $ref: '#/components/schemas/Recipe'
- *   500:
- *    description: Error obtaining the recipe
- *
- * 
+ *   get:
+ *     description: Fetches a recipe by its ID from the database, formats it, and returns it.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: The ID of the recipe to fetch.
+ *         schema:
+ *           type: string
+ *           example: "12345"
+ *     responses:
+ *       200:
+ *         description: Recipe obtained and formatted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Recipe'
+ *       404:
+ *         description: Recipe not found in the database.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Recipe not found"
+ *       500:
+ *         description: Error occurred while fetching or formatting the recipe by ID.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to obtain and format recipe by id"
  */
+
 app.get("/finder/getRecipeById", async (req, res) => {
   try {
     const id = req.query.id;
@@ -109,22 +134,32 @@ app.get("/finder/getRecipeById", async (req, res) => {
 /**
  * @swagger
  * /finder/getRandomRecipes:
- *  get:
- *   description: Use to request random recipes from the Spoonacular API
- *   responses:
- *    200:
- *      description: Random recipes obtained successfully
- *      content:
- *       application/json:
- *       schema:
- *       type: array
- *       items:
- *        $ref: '#/components/schemas/Recipe'
- *    500:
- *      description: Error obtaining random recipes
- *
- *
+ *   get:
+ *     description: Fetches a list of random recipes from the Spoonacular API and saves them to the database.
+ *     parameters:
+ *       - in: query
+ *         name: number
+ *         required: false
+ *         description: The number of random recipes to fetch (default is 30).
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     responses:
+ *       200:
+ *         description: Random recipes obtained successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 recipes:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Recipe'
+ *       500:
+ *         description: Error occurred while fetching random recipes.
  */
+
 app.get("/finder/getRandomRecipes", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
@@ -146,25 +181,30 @@ app.get("/finder/getRandomRecipes", async (req, res) => {
   }
 });
 
-/*
+/**
  * @swagger
  * /finder/getRecipeIngredients:
- *  get:
- *   description: Use to request all recipes from the database
- *   responses:
- *   '200':
- *      description: Recipe ingredients image sent successfully
- *      content:
- *       application/json:
- *       schema:
- *       type: object
- *      properties:
- *      recipes:
- *      type: array
- *  500:
- *    description: Error obtaining recipe ingredients image
- *
+ *   get:
+ *     description: Fetches an ingredient widget image for a specific recipe by ID from the Spoonacular API.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: The ID of the recipe to fetch the ingredient widget image for.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Recipe ingredient widget image retrieved successfully.
+ *         content:
+ *           image/png:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       500:
+ *         description: Error occurred while fetching the recipe ingredients image.
  */
+
 app.get("/finder/getRecipeIngredients", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
@@ -188,6 +228,29 @@ app.get("/finder/getRecipeIngredients", async (req, res) => {
       .json({ error: "Failed to obtain recipe ingredients image" });
   }
 });
+
+/**
+ * @swagger
+ * /finder/getRecipeInformation:
+ *   get:
+ *     description: Fetches a recipe by ID. Checks the database first; if not found, retrieves the data from the Spoonacular API.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: The ID of the recipe to fetch.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Recipe information obtained successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Recipe'
+ *       500:
+ *         description: Error occurred while fetching the recipe information.
+ */
 
 app.get("/finder/getRecipeInformation", async (req, res) => {
   try {
@@ -223,6 +286,37 @@ app.get("/finder/getRecipeInformation", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /finder/getRecipesByIngredients:
+ *   get:
+ *     description: Fetches recipes based on a list of ingredients from the Spoonacular API.
+ *     parameters:
+ *       - in: query
+ *         name: ingredients
+ *         required: true
+ *         description: Comma-separated list of ingredients to filter recipes.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: number
+ *         required: false
+ *         description: Number of recipes to fetch. Default is 30.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Recipes obtained successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Recipe'
+ *       500:
+ *         description: Error obtaining recipes by ingredients.
+ */
+
 app.get("/finder/getRecipesByIngredients", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
@@ -248,6 +342,46 @@ app.get("/finder/getRecipesByIngredients", async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /finder/generateMealPlan:
+ *   get:
+ *     description: Generates a meal plan for a day or week using the Spoonacular API.
+ *     parameters:
+ *       - in: query
+ *         name: timeFrame
+ *         required: false
+ *         description: Specifies whether the meal plan is for a "day" or "week". Defaults to "day".
+ *         schema:
+ *           type: string
+ *           enum: [day, week]
+ *     responses:
+ *       200:
+ *         description: Meal plan generated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: Unique identifier for the generated meal plan.
+ *                 type:
+ *                   type: string
+ *                   description: The type of meal plan ("daily" or "weekly").
+ *                 meals:
+ *                   type: array
+ *                   description: List of meals for a daily meal plan.
+ *                   items:
+ *                     type: object
+ *                     description: A meal object from Spoonacular API.
+ *                 week:
+ *                   type: object
+ *                   description: Weekly meal plan data if `timeFrame` is set to "week".
+ *       500:
+ *         description: Error generating meal plan.
+ */
 app.get("/finder/generateMealPlan", async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
@@ -259,21 +393,7 @@ app.get("/finder/generateMealPlan", async (req, res) => {
     const response = await axios.get(url);
     const data = response.data;
 
-    while (!isUnique) {
-      id = Math.floor(10000 + Math.random() * 90000);
-      const existingPlan = await MealPlan.findOne({ id: id });
-      if (!existingPlan) {
-        isUnique = true;
-      }
-    }
-    console.log("Generated plan ID:", id);
-
-    if (!id) {
-      throw new Error("Invalid plan ID");
-    }
-
     const formattedData = {
-      id: id,
       type: timeFrame === "day" ? "daily" : "weekly",
       meals: timeFrame === "day" ? data.meals : [],
       week: timeFrame === "week" ? data.week : {},
@@ -332,6 +452,54 @@ function formatRecipeData(recipe) {
   };
 }
 
+const swaggerDef= {
+  swaggerDefinition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Microservice Finder",
+      version: "1.0.0",
+      description: "Microservice Finder API",
+    },
+    components: {
+      schemas:{
+        Recipe: {
+          type: "object",
+          properties: {
+            id: { type: "number" },
+            title: { type: "string" },
+            image: { type: "string" },
+            servings: { type: "number" },
+            preparationMinutes: { type: "number" },
+            cookingMinutes: { type: "number" },
+            readyInMinutes: { type: "number" },
+            dishTypes: { type: "array", items: { type: "string" } },
+            extendedIngredients: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  amount: { type: "number" },
+                  unit: { type: "string" },
+                  image: { type: "string" },
+                },
+              },
+            },
+            instructions: { type: "string" },
+          }
+        }
+      },
+    },
+  },
+  apis: [__filename], 
+};
+
+
+const swaggerSpec = swaggerJsdoc(swaggerDef);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.listen(port, () => {
   console.log(`Microservice Finder listening at http://localhost:${port}`);
 });
+
