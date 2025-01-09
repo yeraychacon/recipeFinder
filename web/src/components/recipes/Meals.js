@@ -7,7 +7,6 @@ const Meals = () => {
   const [timeFrame, setTimeFrame] = useState("day"); // Estado para seleccionar diario o semanal
   const [mealPlan, setMealPlan] = useState(null); // Estado para almacenar el meal plan
   const [recipes, setRecipes] = useState({}); // Estado para almacenar recetas individuales
-  const [isFavorite, setIsFavorite] = useState(false); // Estado para verificar si es favorito
   const token = localStorage.getItem("token");
   // Función para generar el meal plan
   const generateMealPlan = async () => {
@@ -45,39 +44,7 @@ const Meals = () => {
     }
   };
 
-  const toggleSave = async (event) => {
-    event.stopPropagation(); 
-    console.log(`Alternando favorito para la receta: ${mealPlan.id}`);
-    
-    try {
-      if (isFavorite) {
-        // Eliminar de favoritos
-        const response = await axios.delete("/api/auth/SavedMeals/delete", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: { mealPlan: mealPlan.id.toString() }, 
-        });
-        console.log("Receta eliminada de favoritos:", response.data);
-      } else {
-        // Añadir a favoritos
-        console.log("Añadiendo receta a favoritos:", mealPlan.id);
-        const response = await axios.post(
-          "/api/auth/SavedMeals/add",
-          { meal: mealPlan.id.toString() }, 
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Receta añadida a favoritos:", response.data);
-      }
-      setIsFavorite(!isFavorite);
-    } catch (error) {
-      console.error("Error alternando favoritos:", error.response || error);
-    }
-  }
+  
 
   
   const getRecipeById = async (id) => {
@@ -144,7 +111,7 @@ const Meals = () => {
 
   return (
     <div className="meals-container">
-      <h1>Meal Plan Finder</h1>
+      <h1>Meal Planner </h1>
 
       {/* Selector para elegir tipo de plan */}
       <label htmlFor="timeFrame">Select Time Frame: </label>
@@ -162,12 +129,7 @@ const Meals = () => {
         <button onClick={generateMealPlan} className="generate-meal">
           Generate Meal Plan
         </button>
-        <button
-          className="save-button"
-          onClick={toggleSave}
-        >
-          Save Meals
-        </button>
+
       </div>
 
       {/* Renderizado condicional según el tipo de plan */}

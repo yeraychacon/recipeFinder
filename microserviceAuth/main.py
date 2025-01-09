@@ -55,12 +55,14 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+#JWT
 def create_jwt_token(data: dict):
     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
     data.update({"exp": expiration})
     token = jwt.encode(data, SECRET_KEY, algorithm="HS256")
     return token
 
+#Get current user
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
@@ -70,6 +72,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+#Get token of the user
 @app.post("/auth/token")
 async def generate_token(from_data: OAuth2PasswordRequestForm = Depends()):
     cursor = db.cursor()
@@ -83,7 +86,8 @@ async def generate_token(from_data: OAuth2PasswordRequestForm = Depends()):
         return {"access_token": token, "token_type": "bearer"}
     else:
         raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos")
-    
+
+#Register user
 @app.post("/auth/register")
 async def register(user: User):
     cursor = db.cursor()
@@ -104,6 +108,7 @@ async def register(user: User):
     cursor.close()
     return {"message": "Usuario registrado con éxito"}
 
+#Logout
 @app.post("/auth/logout")
 async def logout(user: str = Depends(oauth2_scheme)):
     return {"message": "Logout successful"}
@@ -117,134 +122,7 @@ async def getCurrentUser(token: str = Depends(oauth2_scheme)):
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     
-class AddFavoriteRecipe(BaseModel):
-    recipe: str
-
-class DeleteFavoriteRecipe(BaseModel):
-    recipe: str
-
-class FavoriteRecipe(BaseModel):
-    recipeId: str
-    
-@app.post("/auth/favRecipe/add")
-async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-
-    # Verifica si ya existe la receta en favoritos
-    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idMeal=%s"
-    cursor.execute(query, (user, recipe.recipe))
-    existing_favorite = cursor.fetchone()
-
-    if existing_favorite:
-        cursor.close()
-        raise HTTPException(status_code=400, detail="Receta ya añadida a favoritos")
-
-    # Inserta la receta si no existe
-    insert_query = "INSERT INTO favoriterecipes(username, idMeal) VALUES (%s, %s)"
-    cursor.execute(insert_query, (user, recipe.recipe))
-    db.commit()
-
-    cursor.close()
-    return {"message": "Receta añadida a favoritos"}
-  
-@app.delete("/auth/favRecipe/delete")
-async def delete_fav_recipe(recipe: DeleteFavoriteRecipe, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-
-    query = "DELETE FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
-    cursor.execute(query, (user, recipe.recipe))  # Usar recipe.recipe
-    db.commit()
-
-    cursor.close()
-    return {"message": "Receta eliminada de favoritos"}
-
-
-
-@app.post("/auth/favRecipe/check")
-async def check_fav_recipe(recipe: FavoriteRecipe, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-
-    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
-
-    cursor.execute(query, (user, recipe.recipeId))
-    existing_favorite = cursor.fetchone()
-
-    cursor.close()
-    return {"isFavorite": existing_favorite is not None}
-
-@app.get("/auth/favRecipe/list")
-async def list_fav_recipe(user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-
-    query = "SELECT idRecipe FROM favoriterecipes WHERE username=%s"
-    cursor.execute(query, (user,))
-    fav_recipes = cursor.fetchall()
-    
-    cursor.close()
-    return fav_recipes
-
-class addMeal(BaseModel):
-    meal: str
-    
-class deleteMeal(BaseModel):
-    meal: str
-    
-class SavedMeal(BaseModel):
-    mealId: str
-    
-@app.post("/auth/SavedMeals/add")
-async def add_saved_meal(meal: addMeal, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-    
-    query = "SELECT * FROM savedMeals WHERE username=%s AND idMeal=%s"
-    cursor.execute(query, (user, meal.meal))
-    existing_meal = cursor.fetchone()
-    
-    if existing_meal:
-        cursor.close()
-        raise HTTPException(status_code=400, detail="Meal is already saved")
-    
-    insert_query = "INSERT INTO savedMeals(username, idMeal) VALUES (%s, %s)"
-    cursor.execute(insert_query, (user, meal.meal))
-    db.commit()
-    
-    cursor.close()
-    return {"message": "Meal saved successfully"}
-
-@app.get("/auth/SavedMeals/delete")
-async def delete_saved_meal(meal: deleteMeal, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-    
-    query = "DELETE FROM savedMeals WHERE username=%s AND idMeal=%s"
-    cursor.execute(query, (user, meal.meal))
-    db.commit()
-    
-    cursor.close()
-    return {"message": "Meal deleted successfully"}
-
-@app.get("/auth/SavedMeals/check")
-async def check_saved_meal(meal: SavedMeal, user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-    
-    query = "SELECT * FROM savedMeals WHERE username=%s AND idMeal=%s"
-    cursor.execute(query, (user, meal.mealId))
-    existing_meal = cursor.fetchone()
-    
-    cursor.close()
-    return {"isSaved": existing_meal is not None}
-
-@app.get("/auth/SavedMeals/list")
-async def list_saved_meals(user: str = Depends(getCurrentUser)):
-    cursor = db.cursor()
-    
-    query = "SELECT idMeal FROM savedMeals WHERE username=%s"
-    cursor.execute(query, (user,))
-    saved_meals = cursor.fetchall()
-    
-    cursor.close()
-    return saved_meals
-
-
+#Google Auth
 @app.post("/auth/google")
 async def google_login(user: dict):
     cursor = db.cursor()
@@ -267,6 +145,77 @@ async def google_login(user: dict):
         cursor.close()
         token = create_jwt_token({"sub": user["credentialResponseDecoded"]["name"]})
         return {"access_token": token, "token_type": "bearer"}
+    
+
+#Favorite Recipes
+class AddFavoriteRecipe(BaseModel):
+    recipe: str
+
+class DeleteFavoriteRecipe(BaseModel):
+    recipe: str
+
+class FavoriteRecipe(BaseModel):
+    recipeId: str
+    
+#Add favorite recipe 
+@app.post("/auth/favRecipe/add")
+async def add_fav_recipe(recipe: AddFavoriteRecipe, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+
+    # Verifica si ya existe la receta en favoritos
+    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
+    cursor.execute(query, (user, recipe.recipe))
+    existing_favorite = cursor.fetchone()
+
+    if existing_favorite:
+        cursor.close()
+        raise HTTPException(status_code=400, detail="Receta ya añadida a favoritos")
+
+    # Inserta la receta si no existe
+    insert_query = "INSERT INTO favoriterecipes(username, idRecipe) VALUES (%s, %s)"
+    cursor.execute(insert_query, (user, recipe.recipe))
+    db.commit()
+
+    cursor.close()
+    return {"message": "Receta añadida a favoritos"}
+
+#Delete favorite recipe
+@app.delete("/auth/favRecipe/delete")
+async def delete_fav_recipe(recipe: DeleteFavoriteRecipe, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+
+    query = "DELETE FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
+    cursor.execute(query, (user, recipe.recipe))  # Usar recipe.recipe
+    db.commit()
+
+    cursor.close()
+    return {"message": "Receta eliminada de favoritos"}
+
+#Check if recipe is favorite
+@app.post("/auth/favRecipe/check")
+async def check_fav_recipe(recipe: FavoriteRecipe, user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+
+    query = "SELECT * FROM favoriterecipes WHERE username=%s AND idRecipe=%s"
+
+    cursor.execute(query, (user, recipe.recipeId))
+    existing_favorite = cursor.fetchone()
+
+    cursor.close()
+    return {"isFavorite": existing_favorite is not None}
+
+#List favorite recipes
+@app.get("/auth/favRecipe/list")
+async def list_fav_recipe(user: str = Depends(getCurrentUser)):
+    cursor = db.cursor()
+
+    query = "SELECT idRecipe FROM favoriterecipes WHERE username=%s"
+    cursor.execute(query, (user,))
+    fav_recipes = cursor.fetchall()
+    
+    cursor.close()
+    return fav_recipes
+
 
 if __name__ == "__main__":
     import uvicorn

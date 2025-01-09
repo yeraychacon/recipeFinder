@@ -7,7 +7,16 @@
   padding: 10px 20px;
   color: white;
   font-family: Arial, sans-serif;
-  position: relative;
+  position: fixed; /* Header estático */
+  top: 0;
+  left: 0;
+  width: 99%; /* Asegura que ocupe todo el ancho */
+  z-index: 1000; /* Siempre encima de otros elementos */
+}
+
+body {
+  margin: 0;
+  padding-top: 60px;
 }
 
 /* Logo */
@@ -21,25 +30,25 @@
 .header-search {
   display: flex;
   align-items: center;
-  background-color: #ffffff; /* Fondo del contenedor unificado */
+  background-color: #ffffff;
   border-radius: 5px;
-  overflow: hidden; /* Asegura que los bordes se alineen bien */
+  overflow: hidden;
   border: 1px solid #ccc;
 }
 
 .search-input {
   padding: 10px;
   font-size: 16px;
-  border: none; /* Quita los bordes del input */
-  flex: 1; /* Para ocupar todo el espacio disponible */
-  outline: none; /* Quita el borde azul al enfocarse */
+  border: none;
+  flex: 1;
+  outline: none;
 }
 
 .search-button {
   padding: 10px;
-  background: none; /* Sin fondo */
-  border: none; /* Sin borde */
-  display: flex; /* Para centrar el contenido */
+  background: none;
+  border: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -48,11 +57,11 @@
 .search-button svg {
   width: 16px;
   height: 16px;
-  fill: black; /* Lupa en color negro */
+  fill: black;
 }
 
 .search-button:hover svg {
-  fill: #555; /* Cambia a un gris oscuro al pasar el cursor */
+  fill: #555;
 }
 
 /* Navegación */
@@ -60,12 +69,12 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  flex-wrap: wrap; /* Esto permite que el contenido se ajuste si es necesario */
+  flex-wrap: wrap;
 }
 
 /* Navegación en pantallas grandes */
 .desktop-nav {
-  display: flex; /* Asegura que las opciones estén una al lado de la otra */
+  display: flex;
   align-items: center;
   gap: 15px;
 }
@@ -97,7 +106,7 @@
   background-color: #d62828;
 }
 
-/* Responsividad */
+/* Menú hamburguesa */
 .hamburger-menu {
   display: none;
   flex-direction: column;
@@ -113,7 +122,7 @@
 
 /* Menú lateral */
 .sidebar-menu {
-  position: absolute;
+  position: fixed; /* Fijo para permanecer visible al desplazarse */
   top: 0;
   right: 0;
   background-color: #333;
@@ -121,7 +130,7 @@
   height: 100vh;
   padding: 20px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Los elementos distribuidos verticalmente */
   gap: 20px;
   z-index: 1000;
   transform: translateX(0);
@@ -139,8 +148,8 @@
 
 .sidebar-nav {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex-direction: column; /* Distribución vertical */
+  gap: 20px; /* Espacio entre los elementos */
 }
 
 .sidebar-nav .nav-link {
@@ -151,63 +160,6 @@
 
 .sidebar-nav .nav-link:hover {
   color: #ddd;
-}
-
-/* Menú lateral en pantallas grandes */
-.sidebar-menu .nav-link {
-  color: white;
-  font-size: 18px;
-}
-
-/* Dropdown container */
-.dropdown-container {
-  position: relative;
-  cursor: pointer;
-}
-
-/* Dropdown menu */
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: #444;
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  display: none; /* Inicialmente oculto */
-}
-
-.dropdown-container:hover .dropdown-menu {
-  display: block; /* Se muestra al hacer hover */
-}
-
-.dropdown-item {
-  display: block;
-  padding: 10px 15px;
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  transition: background-color 0.3s;
-}
-
-.dropdown-item:hover {
-  background-color: #555;
-}
-
-/* Ajustes para el menú lateral */
-.sidebar-nav .dropdown-container {
-  cursor: pointer;
-}
-
-.sidebar-nav .dropdown-menu {
-  position: static;
-  background-color: #444;
-  margin-top: 5px;
-}
-
-.sidebar-nav .dropdown-item {
-  padding: 8px 10px;
-  color: white;
 }
 
 /* Medios de pantallas pequeñas */
@@ -221,39 +173,19 @@
     display: flex;
   }
 
-  .sidebar-menu {
-    transform: translateX(0);
-    z-index: 1000;
-  }
-
   .search-input {
     min-width: 150px;
   }
+
   .search-button {
     margin-top: 20px;
-    padding: 8px 15px; /* Hacer el botón más ancho y con más padding */
-    min-width: 120px; /* Aumentar el ancho mínimo */
+    padding: 8px 15px;
+    min-width: 120px;
   }
 
   .logout-button {
     padding: 8px 15px;
     min-width: 120px;
     align-self: center;
-  }
-
-  .dropdown-container {
-    margin-top: 20px;
-    width: 100%;
-  }
-
-  .dropdown-menu {
-    position: static;
-    margin-top: 50px;
-    width: 100%;
-  }
-
-  .dropdown-item {
-    padding: 10px;
-    font-size: 16px;
   }
 }

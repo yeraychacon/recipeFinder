@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import "./styles/App.css";
+import axios from "axios";
 
 import Register from "./components/login/Register.js";
 import Login from "./components/login/Login.js";
@@ -16,7 +17,6 @@ import RecipeDetail from "./components/recipes/RecipeDetail.js";
 import FavoritesList from "./components/recipes/FavoritesList.js";
 import RecipeListByIngredient from "./components/recipes/recipeListByIngredient.js";
 import Meals from "./components/recipes/Meals.js";
-import SavedMeals from "./components/recipes/SavedMeals.js";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,22 +32,34 @@ function App() {
   const logout = async () => {
     const token = localStorage.getItem("token");
     if (token) {
-      await axios.post("/api/auth/logout", {
+      console.log("token:", token);
+      const response = await axios.post("http://localhost:8000/auth/logout", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
+      },
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Logout error:", errorData);
+      return;
+  }
     localStorage.removeItem("token");
 
+    setIsAuthenticated(false);
+
     window.location.href = "/";
+
+    console.log("isAuthenticated:", isAuthenticated);
   }
 };
 
   return (
     <Router>
       <div className="App">
-        {isAuthenticated && <Header />}
+        {isAuthenticated && <Header  onLogout={logout}/>}
 
         <Routes>
           <Route path="/" element={<Login onLogin={login} />} />
@@ -60,7 +72,7 @@ function App() {
           <Route path="/favorites" element={<FavoritesList />} />
           <Route path="/recipes" element={<RecipeListByIngredient />} />
           <Route path="/meals" element={<Meals />} />
-          <Route path="/savedMeals" element={<SavedMeals />} />
+          
         </Routes>
       </div>
     </Router>

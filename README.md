@@ -9,7 +9,7 @@ RecipeFinder is a web application designed to help you discover delicious recipe
 - **Ingredient-Based Search**: Find recipes that match your preferred ingredients. 🥕🍅
 - **Random Recipe Exploration**: Browse through a variety of random recipes for inspiration. 🎲🍽️
 - **Meal Plans**: Get daily or weekly meal suggestions to simplify your meal planning. 📅🍴
-- **Favorites**: Save your favorite recipes and meal plans for easy access later. ❤️📖
+- **Favorites**: Save your favorite recipes for easy access later. ❤️📖
 
 ## MICROSERVICES ⚙️
 

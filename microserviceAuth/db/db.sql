@@ -26,9 +26,3 @@ CREATE TABLE favoriteRecipes (
     idRecipe VARCHAR(45) NOT NULL
 );
 
-
-CREATE TABLE savedMeals(
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    username VARCHAR(45) NOT NULL,
-    idMeal VARCHAR(45) NOT NULL
-)

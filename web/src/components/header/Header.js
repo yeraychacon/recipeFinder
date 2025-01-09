@@ -3,16 +3,10 @@ import "../../styles/Header.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ onLogout }) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado del menú lateral
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Estado del desplegable de Meal Planer
-
-  const handleLogout = () => {
-    console.log("Logging Out...");
-    navigate("/"); // Redirige al login
-  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -73,30 +67,13 @@ const Header = () => {
           </form>
 
           <nav className="sidebar-nav">
-            <div
-              className="dropdown-container"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            <Link
+              to="/meals"
+              className="nav-link"
+              onClick={() => setIsMenuOpen(false)}
             >
-              <span className="nav-link">Meal Planer</span>
-              {isDropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link
-                    to="/meals"
-                    className="dropdown-item"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Generate Meal
-                  </Link>
-                  <Link
-                    to="/savedMeals"
-                    className="dropdown-item"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Saved Meals
-                  </Link>
-                </div>
-              )}
-            </div>
+              Generate Meal
+            </Link>
             <Link
               to="/favorites"
               className="nav-link"
@@ -105,10 +82,7 @@ const Header = () => {
               Favorites
             </Link>
             <button
-              onClick={() => {
-                handleLogout();
-                setIsMenuOpen(false);
-              }}
+              onClick={onLogout}
               className="logout-button"
             >
               Log Out
@@ -130,27 +104,13 @@ const Header = () => {
           />
           <button type="submit" className="search-button">🔍</button>
         </form>
-        <div
-          className="dropdown-container"
-          onMouseEnter={() => setIsDropdownOpen(true)}
-          onMouseLeave={() => setIsDropdownOpen(false)}
-        >
-          <span className="nav-link">Meal Planer</span>
-          {isDropdownOpen && (
-            <div className="dropdown-menu">
-              <Link to="/meals" className="dropdown-item">
-                Generate Meal
-              </Link>
-              <Link to="/savedMeals" className="dropdown-item">
-                Saved Meals
-              </Link>
-            </div>
-          )}
-        </div>
+        <Link to="/meals" className="nav-link">
+          Generate Meal
+        </Link>
         <Link to="/favorites" className="nav-link">
           Favorites
         </Link>
-        <button onClick={handleLogout} className="logout-button">
+        <button onClick={onLogout} className="logout-button">
           Log Out
         </button>
       </nav>

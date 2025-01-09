@@ -30,33 +30,9 @@ const RecipeSchema = new mongoose.Schema({
 
 const Recipe = mongoose.model("Recipe", RecipeSchema);
 
-// Esquema unificado para meal plans
-const mealPlanSchema = new mongoose.Schema({
-  id: { type: Number, required: true }, // Identificador único del plan
-  type: { type: String, enum: ["daily", "weekly"], required: true }, // Tipo de plan
-  meals: [
-    {
-      // Arreglo de IDs de meals para planes diarios
-      id: Number,
-    },
-  ],
-  week: [
-    {
-      // Arreglo de días para planes semanales
-      day: String,
-      meals: [
-        {
-          id: Number,
-        },
-      ],
-    },
-  ],
-});
 
-// Modelo de MongoDB
-const MealPlan = mongoose.model("MealPlan", mealPlanSchema);
 
-module.exports = { Recipe, MealPlan };
+module.exports = { Recipe };
 
 async function saveRecipe(recipe) {
   try {
@@ -73,42 +49,6 @@ async function saveRecipe(recipe) {
   }
 }
 
-const saveMealPlan = async (data) => {
-  try {
-    
-
-    const mealPlan = new MealPlan({
-      id: data.id, // Unique 5-digit ID
-      type: data.type, // 'daily' or 'weekly'
-      meals:
-        data.type === "daily"
-          ? data.meals.map((meal) => ({
-              id: meal.id,
-            }))
-          : [],
-      week:
-        data.type === "weekly"
-          ? Object.keys(data.week).map((day) => ({
-              day: day,
-              meals: data.week[day].meals.map((meal) => ({
-                id: meal.id,
-              })),
-            }))
-          : [],
-    });
-
-    // Validar si se generó correctamente el MealPlan
-    if (!mealPlan.id) {
-      throw new Error("Meal Plan ID is missing");
-    }
-
-    await mealPlan.save();
-    console.log("Meal plan saved successfully");
-  } catch (error) {
-    console.error("Error saving meal plan:", error);
-  }
-};
-
 async function getAllRecipes() {
   try {
     const recipes = await Recipe.find();
@@ -117,22 +57,6 @@ async function getAllRecipes() {
     console.error("Error getting all recipes:", error.message);
   }
 }
-
-app.get("/finder/getMealById", async (req, res) => {
-  try {
-    const id = req.query.id;
-    const mealPlan = await MealPlan.findOne({ id: id });
-    if (mealPlan) {
-      res.json(mealPlan);
-      console.log("Meal plan obtained by id successfully");
-    } else {
-      res.status(404).json({ error: "Meal plan not found" });
-    }
-  } catch (error) {
-    console.error("Error obtaining meal plan by id:", error.message);
-    res.status(500).json({ error: "Failed to obtain meal plan by id" });
-  }
-});
 
 async function getRecipeById(id) {
   try {
@@ -143,6 +67,25 @@ async function getRecipeById(id) {
   }
 }
 
+/**
+ * @swagger
+ * /finder/getRecipeById:
+ * get:
+ *  description: Fetches a recipe by ID from the database, if not found fetches from Spoonacular API
+ *  responses:
+ *    200:
+ *      description: All recipe obtained successfully
+ *      content:
+ *        application/json:
+ *      schema:
+ *        type: array
+ *        items:
+ *        $ref: '#/components/schemas/Recipe'
+ *   500:
+ *    description: Error obtaining the recipe
+ *
+ * 
+ */
 app.get("/finder/getRecipeById", async (req, res) => {
   try {
     const id = req.query.id;
@@ -336,11 +279,11 @@ app.get("/finder/generateMealPlan", async (req, res) => {
       week: timeFrame === "week" ? data.week : {},
     };
 
-    await saveMealPlan(formattedData);
+    
     res.json(formattedData);
-    console.log("Meal plan fetched and saved successfully");
+    console.log("Meal plan fetched successfully");
   } catch (error) {
-    console.error("Error fetching or saving meal plan:", error);
+    console.error("Error fetching meal plan:", error);
   }
 });
 
